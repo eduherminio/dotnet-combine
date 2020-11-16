@@ -8,9 +8,8 @@ namespace DotnetCombine.Cli
     {
         public static int Main(string[] args)
         {
-            return Parser.Default.ParseArguments<CombineOptions, ZipOptions>(args)
+            return Parser.Default.ParseArguments<ZipOptions>(args)
                 .MapResult(
-                  //(CombineOptions options) => new Combiner().Run(options),
                   (ZipOptions options) => new Compressor().Run(options),
                   _ => 1);
         }
