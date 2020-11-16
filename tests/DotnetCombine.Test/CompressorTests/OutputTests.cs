@@ -49,7 +49,7 @@ namespace DotnetCombine.Test.CompressorTests
 
         [Theory]
         [InlineData(DefaultOutputDir + "/")]
-        [InlineData(DefaultOutputDir + "\\")]
+        [InlineData(DefaultOutputDir + "//")]
         public void NoOutputFileName_GeneratesUniqueFileName(string outputDir)
         {
             // Arrange
