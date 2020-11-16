@@ -9,13 +9,15 @@ namespace DotnetCombine.Services
 {
     public class Compressor : ICompressor
     {
+        private string _sanitizedInput = null!;
+
         public int Run(ZipOptions options)
         {
             options.Validate();
 
             try
             {
-                options.Input = options.Input.TrimEnd('/').TrimEnd('\\');
+                _sanitizedInput = Path.TrimEndingDirectorySeparator(options.Input);
                 List<string> filesToInclude = FindFilesToInclude(options);
 
                 GenerateZipFile(options, filesToInclude);
@@ -34,42 +36,42 @@ namespace DotnetCombine.Services
             return 0;
         }
 
-        private static List<string> FindFilesToInclude(ZipOptions options)
+        private List<string> FindFilesToInclude(ZipOptions options)
         {
-            var dirsToExclude = options.ExcludedItems.Where(i => i.EndsWith("/") || i.EndsWith("\\"));
+            var dirsToExclude = options.ExcludedItems.Where(Path.EndsInDirectorySeparator);
             var filesToExclude = options.ExcludedItems.Except(dirsToExclude);
 
-            dirsToExclude = dirsToExclude.Select(dir => dir.TrimEnd('/').TrimEnd('\\'));
+            dirsToExclude = dirsToExclude.Select(dir => Path.DirectorySeparatorChar + ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator(dir));
 
             var filesToInclude = new List<string>();
             foreach (var extension in options.Extensions)
             {
                 filesToInclude.AddRange(
-                    Directory.GetFiles(options.Input, $"*.{extension.TrimStart('.')}*", SearchOption.AllDirectories)
+                    Directory.GetFiles(_sanitizedInput, $"*.{extension.TrimStart('.')}*", SearchOption.AllDirectories)
                         .Where(f =>
-                            !dirsToExclude.Any(exclusion => f.IndexOf(exclusion, StringComparison.OrdinalIgnoreCase) != -1)
+                            !dirsToExclude.Any(exclusion => $"{Path.GetDirectoryName(f)}{Path.DirectorySeparatorChar}"?.Contains(exclusion, StringComparison.OrdinalIgnoreCase) == true)
                             && !filesToExclude.Any(exclusion => string.Equals(Path.GetFileName(f), exclusion, StringComparison.OrdinalIgnoreCase))));
             }
 
             return filesToInclude;
         }
 
-        private static void GenerateZipFile(ZipOptions options, List<string> filesToInclude)
+        private void GenerateZipFile(ZipOptions options, List<string> filesToInclude)
         {
             string composeFileName(string fileNameWithoutExtension) =>
-                $"{options.Prefix ?? string.Empty}" +
-                $"{fileNameWithoutExtension}" +
-                $"{options.Suffix ?? string.Empty}" +
+                (options.Prefix ?? string.Empty) +
+                fileNameWithoutExtension +
+                (options.Suffix ?? string.Empty) +
                 ".zip";
 
             string fileName = composeFileName(UniqueIdGenerator.UniqueId());
-            string basePath = $"{options.Input}{Path.DirectorySeparatorChar}";
+            string basePath = _sanitizedInput;
 
             if (options.Output is not null)
             {
                 if (Path.EndsInDirectorySeparator(options.Output))
                 {
-                    basePath = $"{Path.TrimEndingDirectorySeparator(options.Output)}{Path.DirectorySeparatorChar}";
+                    basePath = ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator(options.Output);
                     Directory.CreateDirectory(basePath);
                 }
                 else
@@ -91,7 +93,7 @@ namespace DotnetCombine.Services
             }
 
             var filePath = Path.Combine(basePath, fileName);
-            var pathToTrim = $"{Path.TrimEndingDirectorySeparator(options.Input)}{Path.DirectorySeparatorChar}";
+            var pathToTrim = _sanitizedInput;
 
             using var fs = new FileStream(filePath, FileMode.OpenOrCreate);
             using var zip = new ZipArchive(fs, options.OverWrite ? ZipArchiveMode.Create : ZipArchiveMode.Update);
@@ -99,6 +101,11 @@ namespace DotnetCombine.Services
             {
                 zip.CreateEntryFromFile(file, file[pathToTrim.Length..]);
             }
+        }
+
+        private static string ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator(string dirPath)
+        {
+            return Path.TrimEndingDirectorySeparator(dirPath) + Path.DirectorySeparatorChar;
         }
     }
 }
