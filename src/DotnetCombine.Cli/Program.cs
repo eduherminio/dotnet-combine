@@ -12,7 +12,11 @@ namespace DotnetCombine.Cli
     {
         public static int Main(string[] args)
         {
-            var parser = new Parser(config => config.HelpWriter = null);
+            var parser = new Parser(config =>
+            {
+                config.AutoVersion = false;
+                config.HelpWriter = null;
+            });
 
             var result = parser.ParseArguments<CombineOptions, ZipOptions>(args);
 
@@ -33,6 +37,7 @@ namespace DotnetCombine.Cli
                 helpText.MaximumDisplayWidth = 120;
                 helpText.AddNewLineBetweenHelpSections = true;
                 helpText.AdditionalNewLineAfterOption = true;
+                helpText.AutoVersion = false;
 
                 helpText.OptionComparison = OrderWithValuesFirst;
 
