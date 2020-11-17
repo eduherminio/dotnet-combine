@@ -30,19 +30,11 @@ jobs:
       with:
         dotnet-version: 5.0.100
 
-    - name: '[Ubuntu] Set lib version to -ci-${{ github.run_number }}'
+    - name: '[Ubuntu] Set version to -ci-${{ github.run_number }}'
       if: matrix.os == 'ubuntu-latest'
       shell: pwsh
       run: |
-        $input_path = "src/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj"
-        $regex = "(?<=<Version>).*(?=</Version>)"
-        (Get-Content $input_path) -Replace $regex, '$0-ci-${{ github.run_number }}' | Out-File $input_path
-
-    - name: '[Ubuntu] Set tool version to -ci-${{ github.run_number }}'
-      if: matrix.os == 'ubuntu-latest'
-      shell: pwsh
-      run: |
-        $input_path = "src/${{ env.PROJECT_NAME }}.Cli/${{ env.PROJECT_NAME }}.Cli.csproj"
+        $input_path = "Directory.Build.props"
         $regex = "(?<=<Version>).*(?=</Version>)"
         (Get-Content $input_path) -Replace $regex, '$0-ci-${{ github.run_number }}' | Out-File $input_path
 
@@ -56,7 +48,6 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         dotnet pack -c Release --no-build src/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj --include-symbols -o ${{ env.ARTIFACT_DIR }}
-        dotnet pack -c Release --no-build src/${{ env.PROJECT_NAME }}.Cli/${{ env.PROJECT_NAME }}.Cli.csproj --include-symbols -o ${{ env.ARTIFACT_DIR }}
 
     - name: '[Ubuntu] Upload Artifact'
       if: matrix.os == 'ubuntu-latest'

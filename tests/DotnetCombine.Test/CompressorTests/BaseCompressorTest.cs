@@ -19,7 +19,7 @@ namespace DotnetCombine.Test.CompressorTests
         protected const string InputDir = CompressorTestsFixture.InputDir;
         protected const string DefaultOutputDir = CompressorTestsFixture.DefaultOutputDir;
 
-        protected readonly ICompressor _compressor;
+        protected readonly Compressor _compressor;
 
         public BaseCompressorTests()
         {

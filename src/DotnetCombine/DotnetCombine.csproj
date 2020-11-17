@@ -1,26 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <PackAsTool>true</PackAsTool>
+    <AssemblyName>dotnet-combine</AssemblyName>
+    <ToolCommandName>dotnet-combine</ToolCommandName>
+    <PackageOutputPath>./nupkg</PackageOutputPath>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>0.0.1-alpha</Version>
-    <Title>DotnetCombine</Title>
-    <PackageId>DotnetCombine</PackageId>
+    <Title>dotnet combine</Title>
+    <PackageId>dotnet-combine</PackageId>
     <Description>
-      Handy toolbox with commonly used classes and extension methods.
+      .NET global tool that allows you to combine multiple C# source files into a single one, create a .zip with multiple files, etc.
     </Description>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="2.8.0" />
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>DotnetCombine.Test</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
 
   <ItemGroup>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-      <_Parameter1>$(AssemblyName).Test</_Parameter1>
-    </AssemblyAttribute>
+    <PackageReference Include="CommandLineParser" Version="2.8.0" />
   </ItemGroup>
 
 </Project>

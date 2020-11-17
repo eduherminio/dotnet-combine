@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace DotnetCombine.Cli
+namespace DotnetCombine
 {
     public static class Program
     {

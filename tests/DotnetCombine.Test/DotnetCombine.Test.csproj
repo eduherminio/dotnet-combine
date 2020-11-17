@@ -1,16 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="TestFiles\Compressor\cs1.cs" />
-    <Compile Remove="TestFiles\Compressor\dir1\dir1cs1.cs" />
-    <Compile Remove="TestFiles\Compressor\dir2\dir2cs1.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.0" />
@@ -28,6 +20,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\DotnetCombine\DotnetCombine.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="TestFiles\Compressor\cs1.cs" />
+    <Compile Remove="TestFiles\Compressor\dir1\dir1cs1.cs" />
+    <Compile Remove="TestFiles\Compressor\dir2\dir2cs1.cs" />
+    <None Remove="C:\dev\dotnet-combine\resources\icon.png" />
   </ItemGroup>
 
   <ItemGroup>

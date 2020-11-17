@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace DotnetCombine.Services
 {
-    public class Compressor : ICompressor
+    public class Compressor
     {
         private string _sanitizedInput = null!;
 
