@@ -3,6 +3,7 @@ using CommandLine.Text;
 using DotnetCombine.Options;
 using DotnetCombine.Services;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace DotnetCombine.Cli
@@ -28,15 +29,23 @@ namespace DotnetCombine.Cli
             {
                 var assembly = Assembly.GetEntryAssembly();
                 helpText.Heading = $"{assembly?.GetName().Name} {assembly?.GetName().Version}";
-                helpText.Copyright = "Created by Eduardo Cáceres - https://github.com/eduherminio/dotnet-combine";
+                helpText.Copyright = "By Eduardo Cáceres - https://github.com/eduherminio/dotnet-combine";
                 helpText.MaximumDisplayWidth = 120;
                 helpText.AddNewLineBetweenHelpSections = true;
                 helpText.AdditionalNewLineAfterOption = true;
+
                 helpText.OptionComparison = OrderWithValuesFirst;
 
-                helpText.AddPreOptionsLine(result.TypeInfo.Current == typeof(ZipOptions)
-                    ? "Usage: dotnet-combine zip <INPUT> [options]"
-                    : "Usage: dotnet-combine single-file <INPUT> [options]");
+                var typeUsage = new Dictionary<Type, string>
+                {
+                    [typeof(ZipOptions)] = "Usage: dotnet-combine zip <INPUT> [options]",
+                    [typeof(CombineOptions)] = "Usage: dotnet-combine single-file <INPUT> [options]"
+                };
+
+                if (typeUsage.TryGetValue(result.TypeInfo.Current, out var usageMessage))
+                {
+                    helpText.AddPreOptionsLine(usageMessage);
+                }
 
                 return HelpText.DefaultParsingErrorsHandler(result, helpText);
             }, e => e);
