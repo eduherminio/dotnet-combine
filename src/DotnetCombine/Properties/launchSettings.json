@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DotnetCombine": {
+      "commandName": "Project",
+      "commandLineArgs": "--help"
+    }
+  }
+}
