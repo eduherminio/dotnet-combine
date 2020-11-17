@@ -12,22 +12,16 @@ namespace DotnetCombine.Cli
     {
         public static int Main(string[] args)
         {
-            var parser = new Parser(config =>
-            {
-                config.AutoVersion = false;
-                config.HelpWriter = null;
-            });
+            var parser = new Parser(config => config.HelpWriter = null);
 
             var result = parser.ParseArguments<CombineOptions, ZipOptions>(args);
 
-            return result
-                .WithNotParsed(_ => DisplayHelp(result))
-                .MapResult(
-                  (ZipOptions options) => new Compressor().Run(options),
-                  _ => 1);
+            return result.MapResult(
+                (ZipOptions options) => new Compressor().Run(options),
+                _ => DisplayHelp(result));
         }
 
-        private static void DisplayHelp(ParserResult<object> result)
+        private static int DisplayHelp(ParserResult<object> result)
         {
             var helpText = HelpText.AutoBuild(result, helpText =>
             {
@@ -37,7 +31,6 @@ namespace DotnetCombine.Cli
                 helpText.MaximumDisplayWidth = 120;
                 helpText.AddNewLineBetweenHelpSections = true;
                 helpText.AdditionalNewLineAfterOption = true;
-                helpText.AutoVersion = false;
 
                 helpText.OptionComparison = OrderWithValuesFirst;
 
@@ -52,10 +45,12 @@ namespace DotnetCombine.Cli
                     helpText.AddPreOptionsLine(usageMessage);
                 }
 
-                return HelpText.DefaultParsingErrorsHandler(result, helpText);
-            }, e => e);
+                return helpText;
+            });
 
             Console.WriteLine(helpText);
+
+            return 1;
         }
 
         private static readonly Comparison<ComparableOption> OrderWithValuesFirst = (ComparableOption attr1, ComparableOption attr2) =>
