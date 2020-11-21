@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.0" />
-    <PackageReference Include="SheepTools" Version="0.4.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -23,26 +22,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="TestFiles\Compressor\cs1.cs" />
-    <Compile Remove="TestFiles\Compressor\dir1\dir1cs1.cs" />
-    <Compile Remove="TestFiles\Compressor\dir2\dir2cs1.cs" />
+    <Compile Remove="TestFiles\**\*.cs" />
+    <None Include="TestFiles\**\*.cs" />
     <None Remove="C:\dev\dotnet-combine\resources\icon.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestFiles\Compressor\txt1.txt">
+    <None Update="TestFiles\**\*.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestFiles\Compressor\cs1.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Compressor\dir2\dir2cs1.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="TestFiles\Compressor\dir1\dir1txt1.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Compressor\dir1\dir1cs1.cs">
+    <None Update="TestFiles\**\*.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

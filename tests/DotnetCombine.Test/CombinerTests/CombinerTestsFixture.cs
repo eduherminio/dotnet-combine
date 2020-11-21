@@ -3,16 +3,15 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace DotnetCombine.Test.CompressorTests
+namespace DotnetCombine.Test.CombinerTests
 {
-    public class CompressorTestsFixture : IDisposable
+    public class CombinerTestsFixture : IDisposable
     {
-        public const int TotalCsFiles = 3;
-        public const int TotalTxtFiles = 2;
-        public const string InputDir = "TestFiles/Compressor";
-        public const string DefaultOutputDir = "CompressorTests";
+        public const string InputDir = "TestFiles/Combiner";
+        public const string DefaultOutputDir = "CombinerTests";
+        public const string DefaultSuffix = "-generated";
 
-        public CompressorTestsFixture()
+        public CombinerTestsFixture()
         {
             CleanInputDir();
             CleanDefaultOutputDir();
@@ -21,7 +20,8 @@ namespace DotnetCombine.Test.CompressorTests
 
         protected static void CleanInputDir()
         {
-            foreach (var file in Directory.GetFiles(InputDir).Where(f => Path.GetExtension(f) == Compressor.OutputExtension))
+            foreach (var file in Directory.GetFiles(InputDir)
+                .Where(f => Path.GetExtension(f) == Combiner.OutputExtension && Path.GetFileName(f).Contains(DefaultSuffix, StringComparison.OrdinalIgnoreCase)))
             {
                 File.Delete(file);
             }
@@ -31,7 +31,7 @@ namespace DotnetCombine.Test.CompressorTests
         {
             if (Directory.Exists(DefaultOutputDir))
             {
-                Directory.Delete(DefaultOutputDir, recursive: true);
+                //Directory.Delete(DefaultOutputDir, recursive: true);
             }
         }
 

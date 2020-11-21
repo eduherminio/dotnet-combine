@@ -2,7 +2,7 @@
   "profiles": {
     "DotnetCombine": {
       "commandName": "Project",
-      "commandLineArgs": "--help"
+      "commandLineArgs": "single-file C:\\dev\\dotnet-combine\\examples"
     }
   }
 }

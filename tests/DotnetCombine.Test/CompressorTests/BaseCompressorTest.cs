@@ -3,13 +3,13 @@ using Xunit;
 
 namespace DotnetCombine.Test.CompressorTests
 {
+    /// <summary>
+    /// This class has no code, and is never created. Its purpose is simply
+    /// to be the place to apply [CollectionDefinition] and all the
+    /// ICollectionFixture interfaces.
+    /// </summary>
     [CollectionDefinition(nameof(CompressorTestsFixture))]
-    public class CompressorTestsCollection : ICollectionFixture<CompressorTestsFixture>
-    {
-        // This class has no code, and is never created. Its purpose is simply
-        // to be the place to apply [CollectionDefinition] and all the
-        // ICollectionFixture<> interfaces.
-    }
+    public class CompressorTestsCollection : ICollectionFixture<CompressorTestsFixture> { }
 
     [Collection(nameof(CompressorTestsFixture))]
     public class BaseCompressorTests

@@ -9,6 +9,7 @@ namespace DotnetCombine.Services
 {
     public class Compressor
     {
+        public const string OutputExtension = ".zip";
         private string _sanitizedInput = null!;
 
         public int Run(ZipOptions options)
@@ -38,10 +39,11 @@ namespace DotnetCombine.Services
 
         private List<string> FindFilesToInclude(ZipOptions options)
         {
-            var dirsToExclude = options.ExcludedItems.Where(Path.EndsInDirectorySeparator);
-            var filesToExclude = options.ExcludedItems.Except(dirsToExclude);
+            var filesToExclude = options.ExcludedItems.Where(item => !Path.EndsInDirectorySeparator(item));
 
-            dirsToExclude = dirsToExclude.Select(dir => Path.DirectorySeparatorChar + ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator(dir));
+            var dirsToExclude = options.ExcludedItems
+                .Except(filesToExclude)
+                .Select(dir => Path.DirectorySeparatorChar + dir.ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator());
 
             var filesToInclude = new List<string>();
             foreach (var extension in options.Extensions)
@@ -62,7 +64,7 @@ namespace DotnetCombine.Services
                 (options.Prefix ?? string.Empty) +
                 fileNameWithoutExtension +
                 (options.Suffix ?? string.Empty) +
-                ".zip";
+                OutputExtension;
 
             string fileName = composeFileName(UniqueIdGenerator.UniqueId());
             string basePath = _sanitizedInput;
@@ -71,22 +73,16 @@ namespace DotnetCombine.Services
             {
                 if (Path.EndsInDirectorySeparator(options.Output))
                 {
-                    basePath = ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator(options.Output);
+                    basePath = options.Output.ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator();
                     Directory.CreateDirectory(basePath);
                 }
                 else
                 {
                     var directoryName = Path.GetDirectoryName(options.Output);
 
-                    if (string.IsNullOrEmpty(directoryName))
-                    {
-                        basePath = $"{options.Input}{Path.DirectorySeparatorChar}";
-                    }
-                    else
-                    {
-                        var newDir = Directory.CreateDirectory(directoryName);
-                        basePath = newDir.FullName;
-                    }
+                    basePath = string.IsNullOrEmpty(directoryName)
+                        ? options.Input + Path.DirectorySeparatorChar
+                        : Directory.CreateDirectory(directoryName).FullName;
 
                     fileName = composeFileName(Path.GetFileNameWithoutExtension(options.Output));
                 }
@@ -101,11 +97,6 @@ namespace DotnetCombine.Services
             {
                 zip.CreateEntryFromFile(file, file[pathToTrim.Length..]);
             }
-        }
-
-        private static string ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator(string dirPath)
-        {
-            return Path.TrimEndingDirectorySeparator(dirPath) + Path.DirectorySeparatorChar;
         }
     }
 }

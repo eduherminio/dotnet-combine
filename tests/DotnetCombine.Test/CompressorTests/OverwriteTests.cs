@@ -1,4 +1,5 @@
 ﻿using DotnetCombine.Options;
+using DotnetCombine.Services;
 using SheepTools;
 using System.IO;
 using System.IO.Compression;
@@ -14,7 +15,7 @@ namespace DotnetCombine.Test.CompressorTests
         {
             // Arrange - create a pre-existing .zip file with one .cs file inside
             var initialCsFile = Path.Combine(InputDir, "cs1.cs");
-            var expectedZipFile = $"{Path.Combine(DefaultOutputDir, nameof(OverWrite_CreatesANewFile))}.zip";
+            var expectedZipFile = Path.Combine(DefaultOutputDir, nameof(OverWrite_CreatesANewFile)) + Compressor.OutputExtension;
 
             Ensure.True(File.Exists(initialCsFile));
             CreateZipFile(expectedZipFile, initialCsFile);
@@ -49,10 +50,11 @@ namespace DotnetCombine.Test.CompressorTests
         {
             // Arrange - create a pre-existing .zip file with one .cs file inside
             var initialCsFile = Path.Combine(InputDir, "cs1.cs");
-            var expectedZipFile = $"{Path.Combine(DefaultOutputDir, nameof(NoOverwrite_UpdatesExistingFile))}.zip";
+            var expectedZipFile = Path.Combine(DefaultOutputDir, nameof(NoOverwrite_UpdatesExistingFile)) + Compressor.OutputExtension;
 
             Ensure.True(File.Exists(initialCsFile));
             CreateZipFile(expectedZipFile, initialCsFile);
+            Ensure.True(File.Exists(expectedZipFile));
 
             // Act
             var options = new ZipOptions()

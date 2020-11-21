@@ -17,6 +17,7 @@ namespace DotnetCombine
             var result = parser.ParseArguments<CombineOptions, ZipOptions>(args);
 
             return result.MapResult(
+                (CombineOptions options) => new Combiner().Run(options).Result,
                 (ZipOptions options) => new Compressor().Run(options),
                 _ => DisplayHelp(result));
         }
