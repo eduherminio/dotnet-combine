@@ -1,6 +1,5 @@
 ﻿using DotnetCombine.Options;
 using DotnetCombine.Services;
-using SheepTools;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -16,7 +15,7 @@ namespace DotnetCombine.Test.CombinerTests.OptionsTests
             var initialCsFile = Path.Combine(DefaultOutputDir, nameof(OverWrite_CreatesANewFile)) + Combiner.OutputExtension;
 
             CreateFile(initialCsFile);
-            Ensure.True(File.Exists(initialCsFile));
+            Assert.True(File.Exists(initialCsFile));
 
             // Act
             var options = new CombineOptions()
@@ -41,7 +40,7 @@ namespace DotnetCombine.Test.CombinerTests.OptionsTests
             var initialCsFile = Path.Combine(DefaultOutputDir, nameof(NoOverwrite_ThrowsAnException)) + Combiner.OutputExtension;
 
             CreateFile(initialCsFile);
-            Ensure.True(File.Exists(initialCsFile));
+            Assert.True(File.Exists(initialCsFile));
 
             // Act
             var options = new CombineOptions()

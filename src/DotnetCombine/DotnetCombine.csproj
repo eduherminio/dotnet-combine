@@ -25,13 +25,6 @@
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.8.0" />
-    <PackageReference Include="SheepTools" Version="0.5.0" />
   </ItemGroup>
-
-  <Target Name="dotnet-combine single-file" AfterTargets="Build" DependsOnTargets="Build" Condition="'$(Configuration)' == 'Release' ">
-    <Message Importance="high" Text="Running dotnet-combine tool"/>
-    <Message Importance="high" Text="dotnet-combine single-file $(MSBuildProjectDirectory) --overwrite --output $(MSBuildProjectDirectory)/bin/ --exclude &quot;ParsedFile.cs;bin/;obj/;Interfaces/&quot;"/>
-    <Exec Command="dotnet-combine single-file $(MSBuildProjectDirectory) --overwrite --output $(MSBuildProjectDirectory)/bin/ --exclude &quot;ParsedFile.cs;bin/;obj/;Interfaces/&quot;"/>
-  </Target>
 
 </Project>
