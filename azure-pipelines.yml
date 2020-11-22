@@ -1,0 +1,129 @@
+name: $(BuildID)
+
+schedules:
+- cron: "1 0 * * 1"
+  displayName: 'Weekly build'
+  always: true
+  branches:
+    include:
+    - main
+
+variables:
+  SdkVersion: '5.0.100'
+
+stages:
+- stage: CI
+  displayName: 'CI'
+  jobs:
+  - job: ci
+    displayName: 'CI'
+
+    strategy:
+      maxParallel: 3
+      matrix:
+        linux:
+          imageName: 'ubuntu-latest'
+        mac:
+          imageName: 'macOS-latest'
+        windows:
+          imageName: 'windows-latest'
+    pool:
+      vmImage: $(imageName)
+
+    variables:
+      disable.coverage.autogenerate: 'true'
+      EscapedComma: '%2c'
+      TestResults: '$(Agent.TempDirectory)'
+      CoverageResults: '$(Build.SourcesDirectory)/CoverageResults'
+
+    steps:
+    - task: UseDotNet@2
+      displayName: 'Use .NET Core sdk v$(SdkVersion)'
+      inputs:
+        packageType: sdk
+        version: '$(SdkVersion)'
+
+    - task: SonarCloudPrepare@1
+      displayName: 'Prepare SonarCloud analysis'
+      condition: eq(variables['imageName'], 'windows-latest')
+      inputs:
+        SonarCloud: 'DotnetCombine_SonarCloud'
+        organization: 'eduherminio-github'
+        scannerMode: 'MSBuild'
+        projectKey: 'DotnetCombine'
+        projectName: 'DotnetCombine'
+        extraProperties: |
+            sonar.cs.opencover.reportsPaths="$(Build.SourcesDirectory)/**/coverage.opencover.xml"
+            sonar.cs.vstest.reportsPaths="$(TestResults)/**/*.trx"
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Restore'
+      inputs:
+        command: restore
+        arguments: '--configuration Release'
+        projects: './DotnetCombineSolution.sln'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Build'
+      inputs:
+        command: build
+        arguments: '--configuration Release --no-restore /p:DeterministicBuild=true'
+        projects: './DotnetCombineSolution.sln'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Run tests'
+      inputs:
+        command: test
+        arguments: >-
+            --configuration Release --no-build
+            /p:CollectCoverage=true /p:CoverletOutputFormat="cobertura$(EscapedComma)opencover"
+            /p:CoverletOutput=./CoverageResults/ /p:ExcludeByFile="**/*Exception.cs$(EscapedComma)**/*Test.cs$(EscapedComma)**/*Tests.cs$(EscapedComma)**/*Fixture.cs"
+        nobuild: true
+        projects: '**/DotnetCombine.Test.csproj'
+        publishTestResults: true
+
+    - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@4
+      displayName: 'Generate tests report'
+      condition: and(succeeded(), eq(variables['imageName'], 'ubuntu-latest'))
+      inputs:
+        reports: '$(Build.SourcesDirectory)/**/coverage.cobertura.xml'
+        targetdir: '$(CoverageResults)'
+        reporttypes: 'HtmlInline_AzurePipelines;Cobertura;Badges'
+        assemblyfilters: '-xunit*'
+
+    - task: PublishCodeCoverageResults@1
+      displayName: 'Publish code coverage'
+      condition: and(succeeded(), eq(variables['imageName'], 'ubuntu-latest'))
+      inputs:
+        codeCoverageTool: Cobertura
+        summaryFileLocation: '$(CoverageResults)/Cobertura.xml'
+        reportDirectory: '$(CoverageResults)'
+        pathToSources: '$(Build.SourcesDirectory)'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Generate NuGet package'
+      condition: and(succeeded(), eq(variables['imageName'], 'ubuntu-latest'))
+      inputs:
+        command: 'pack'
+        arguments: '--configuration Release'
+        configuration: 'Release'
+        packagesToPack: '**/DotnetCombine.csproj'
+        nobuild: true
+        packDirectory: '$(Build.SourcesDirectory)/DotnetCombine/Artifacts'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish artifact with NuGet package and its symbols'
+      condition: and(succeeded(), eq(variables['imageName'], 'ubuntu-latest'))
+      inputs:
+        pathtoPublish: '$(Build.SourcesDirectory)/DotnetCombine/Artifacts/'
+        artifactName: 'DotnetCombine'
+
+    - task: SonarCloudAnalyze@1
+      displayName: 'Perform SonarCloud analysis'
+      condition: eq(variables['imageName'], 'windows-latest')
+
+    - task: SonarCloudPublish@1
+      displayName: 'Publish SonarCloud analysis'
+      condition: eq(variables['imageName'], 'windows-latest')
+      inputs:
+        pollingTimeoutSec: '300'
