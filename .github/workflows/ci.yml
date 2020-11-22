@@ -30,6 +30,39 @@ jobs:
       with:
         dotnet-version: 5.0.100
 
+    - name: Cache SonarCloud packages
+      uses: actions/cache@v1
+      if: matrix.os == 'windows-latest'
+      with:
+        path: ~\sonar\cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
+
+    - name: Cache SonarCloud scanner
+      id: cache-sonar-scanner
+      if: matrix.os == 'windows-latest'
+      uses: actions/cache@v1
+      with:
+        path: .\.sonar\scanner
+        key: ${{ runner.os }}-sonar-scanner
+        restore-keys: ${{ runner.os }}-sonar-scanner
+
+    - name: Install SonarCloud scanner
+      if: matrix.os == 'windows-latest' && steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+      shell: powershell
+      run: |
+        New-Item -Path .\.sonar\scanner -ItemType Directory
+        dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+
+    - name: Prepare sonar Analysis
+      if: matrix.os == 'windows-latest'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      shell: powershell
+      run: |
+        .\.sonar\scanner\dotnet-sonarscanner begin /k:"${{ env.PROJECT_NAME }}" /o:"eduherminio-github" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+
     - name: '[Ubuntu] Set version to -ci-${{ github.run_number }}'
       if: matrix.os == 'ubuntu-latest'
       shell: pwsh
@@ -81,3 +114,12 @@ jobs:
         name: ${{ env.PROJECT_NAME }}-coverage-ci-${{ github.run_number }}
         path: coveragereport/
         if-no-files-found: error
+
+    - name: Perform Sonar analysis
+      if: matrix.os == 'windows-latest'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      shell: powershell
+      run: |
+        .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
