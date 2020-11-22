@@ -35,7 +35,7 @@ namespace DotnetCombine.Model
 
             var originalRoot = syntaxTree.GetCompilationUnitRoot();
 
-            var pathToTrim = Path.TrimEndingDirectorySeparator(options.Input) + Path.AltDirectorySeparatorChar;
+            var pathToTrim = options.Input.ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator();
 
             var syntaxNode = options.MergeNamespaces
                 ? new AnnotateClassesRewriter(Filepath[pathToTrim.Length..]).Visit(originalRoot)

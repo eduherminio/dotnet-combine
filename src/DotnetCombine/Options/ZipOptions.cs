@@ -22,7 +22,7 @@ File extensions to include.")]
         public IEnumerable<string> Extensions { get; set; } = new[] { ".cs", ".csproj", ".sln" };
 
         [Option(shortName: 'f', longName: "overwrite", Required = false, Default = false, HelpText = @"
-Replace the output zip file if it exists. Default behavior is updating it.")]
+Overwrite the output file if it exists.")]
         public bool OverWrite { get; set; }
 
         [Option(longName: "exclude", Required = false, Separator = ';', Default = new[] { "bin/", "obj/" }, HelpText = @"

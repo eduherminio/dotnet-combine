@@ -2,7 +2,7 @@
 using System;
 using Xunit;
 
-namespace DotnetCombine.Test.CombinerTests
+namespace DotnetCombine.Test.CombinerTests.OptionsTests
 {
     public class ValidationTests : BaseCombinerTests
     {

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace DotnetCombine.Test.CombinerTests
+namespace DotnetCombine.Test.CombinerTests.OptionsTests
 {
     public class OutputTests : BaseCombinerTests
     {

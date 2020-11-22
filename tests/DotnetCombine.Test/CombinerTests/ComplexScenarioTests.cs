@@ -13,19 +13,21 @@ using Xunit;
 
 namespace DotnetCombine.Test.CombinerTests
 {
-    public class RoslynTests : BaseCombinerTests
+    public class ComplexScenarioTests : BaseCombinerTests, IDisposable
     {
+        private string? _outputPath;
+
         [Fact]
-        public async Task RoslynTest()
+        public async Task OutputFileContent()
         {
             // Arrange
             var input = "TestsInput/Combiner/ComplexScenario/";
-            var output = Path.Combine("ComplexScenarioTestsOutput", nameof(RoslynTests) + Combiner.OutputExtension);
+            _outputPath = Path.Combine("ComplexScenarioTestsOutput", nameof(FileContentTest) + Combiner.OutputExtension);
 
             var options = new CombineOptions
             {
                 Input = input,
-                Output = output,
+                Output = _outputPath,
                 OverWrite = true
             };
 
@@ -34,11 +36,33 @@ namespace DotnetCombine.Test.CombinerTests
 
             // Assert
             Assert.Equal(0, exitCode);
-            Assert.True(File.Exists(output));
+            Assert.True(File.Exists(_outputPath));
 
-            CheckFileContent(output);
+            CheckFileContent(_outputPath);
+        }
 
-            await CheckCompilationResults(output);
+        [Fact]
+        public async Task OutputFileCompilation()
+        {
+            // Arrange
+            var input = "TestsInput/Combiner/ComplexScenario/";
+            _outputPath = Path.Combine("ComplexScenarioTestsOutput", nameof(OutputFileCompilation) + Combiner.OutputExtension);
+
+            var options = new CombineOptions
+            {
+                Input = input,
+                Output = _outputPath,
+                OverWrite = true
+            };
+
+            // Act
+            var exitCode = await _combiner.Run(options);
+
+            // Assert
+            Assert.Equal(0, exitCode);
+            Assert.True(File.Exists(_outputPath));
+
+            await CheckCompilationResults(_outputPath);
         }
 
         private static void CheckFileContent(string output)
@@ -94,5 +118,23 @@ namespace DotnetCombine.Test.CombinerTests
             using var stream = new MemoryStream();
             return compilation.Emit(stream);
         }
+
+        #region IDisposable implementation
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (File.Exists(_outputPath))
+            {
+                File.Delete(_outputPath!);
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
     }
 }

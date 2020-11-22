@@ -2,7 +2,7 @@
   "profiles": {
     "DotnetCombine": {
       "commandName": "Project",
-      "commandLineArgs": "single-file C:\\dev\\dotnet-combine\\tests\\DotnetCombine.Test\\TestsInput\\Combiner\\ --prefix generated_ --suffix _generated --output C:\\dev\\dotnet-combine\\tmp\\ -m"
+      "commandLineArgs": "zip C:\\dev\\FileParser\\src\\FileParser --output C:/dev/tmp/output.zip"
     }
   }
 }

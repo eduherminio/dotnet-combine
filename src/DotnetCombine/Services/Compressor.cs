@@ -10,6 +10,8 @@ namespace DotnetCombine.Services
     public class Compressor
     {
         public const string OutputExtension = ".zip";
+
+        private ZipOptions _options = null!;
         private string _sanitizedInput = null!;
 
         public int Run(ZipOptions options)
@@ -18,10 +20,20 @@ namespace DotnetCombine.Services
 
             try
             {
-                _sanitizedInput = Path.TrimEndingDirectorySeparator(options.Input);
-                List<string> filesToInclude = FindFilesToInclude(options);
+                _options = options;
+                _sanitizedInput = _options.Input.ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator();
 
-                GenerateZipFile(options, filesToInclude);
+                string outputFilePath = GetOutputFilePath();
+                if (!_options.OverWrite && File.Exists(outputFilePath))
+                {
+                    throw new CombineException(
+                        $"The file {outputFilePath} already exists{Environment.NewLine}" +
+                        $"Did you mean to set --overwrite to true?{Environment.NewLine}" +
+                        "You can also leave --output empty to always have a new one generated (and maybe use --prefix or --suffix to identify it).");
+                }
+
+                List<string> filesToInclude = FindFilesToInclude();
+                GenerateZipFile(outputFilePath, filesToInclude);
             }
             catch (Exception e)
             {
@@ -37,19 +49,52 @@ namespace DotnetCombine.Services
             return 0;
         }
 
-        private List<string> FindFilesToInclude(ZipOptions options)
+        private string GetOutputFilePath()
         {
-            var filesToExclude = options.ExcludedItems.Where(item => !Path.EndsInDirectorySeparator(item));
+            string composeFileName(string fileNameWithoutExtension) =>
+                (_options.Prefix ?? string.Empty) +
+                fileNameWithoutExtension +
+                (_options.Suffix ?? string.Empty) +
+                OutputExtension;
 
-            var dirsToExclude = options.ExcludedItems
+            string fileName = composeFileName(UniqueIdGenerator.UniqueId());
+            string basePath = _sanitizedInput;
+
+            if (_options.Output is not null)
+            {
+                if (Path.EndsInDirectorySeparator(_options.Output))
+                {
+                    basePath = _options.Output.ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator();
+                    Directory.CreateDirectory(basePath);
+                }
+                else
+                {
+                    var directoryName = Path.GetDirectoryName(_options.Output);
+
+                    basePath = string.IsNullOrEmpty(directoryName)
+                        ? _options.Input + Path.DirectorySeparatorChar
+                        : Directory.CreateDirectory(directoryName).FullName;
+
+                    fileName = composeFileName(Path.GetFileNameWithoutExtension(_options.Output));
+                }
+            }
+
+            return Path.Combine(basePath, fileName);
+        }
+
+        private List<string> FindFilesToInclude()
+        {
+            var filesToExclude = _options.ExcludedItems.Where(item => !Path.EndsInDirectorySeparator(item));
+
+            var dirsToExclude = _options.ExcludedItems
                 .Except(filesToExclude)
                 .Select(dir => Path.DirectorySeparatorChar + dir.ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator());
 
             var filesToInclude = new List<string>();
-            foreach (var extension in options.Extensions)
+            foreach (var extension in _options.Extensions)
             {
                 filesToInclude.AddRange(
-                    Directory.GetFiles(_sanitizedInput, $"*.{extension.TrimStart('.')}*", SearchOption.AllDirectories)
+                    Directory.GetFiles(_sanitizedInput, $"*.{extension.TrimStart('.')}", SearchOption.AllDirectories)
                         .Where(f =>
                             !dirsToExclude.Any(exclusion => $"{Path.GetDirectoryName(f)}{Path.DirectorySeparatorChar}"?.Contains(exclusion, StringComparison.OrdinalIgnoreCase) == true)
                             && !filesToExclude.Any(exclusion => string.Equals(Path.GetFileName(f), exclusion, StringComparison.OrdinalIgnoreCase))));
@@ -58,41 +103,12 @@ namespace DotnetCombine.Services
             return filesToInclude;
         }
 
-        private void GenerateZipFile(ZipOptions options, List<string> filesToInclude)
+        private void GenerateZipFile(string zipFilePath, List<string> filesToInclude)
         {
-            string composeFileName(string fileNameWithoutExtension) =>
-                (options.Prefix ?? string.Empty) +
-                fileNameWithoutExtension +
-                (options.Suffix ?? string.Empty) +
-                OutputExtension;
-
-            string fileName = composeFileName(UniqueIdGenerator.UniqueId());
-            string basePath = _sanitizedInput;
-
-            if (options.Output is not null)
-            {
-                if (Path.EndsInDirectorySeparator(options.Output))
-                {
-                    basePath = options.Output.ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator();
-                    Directory.CreateDirectory(basePath);
-                }
-                else
-                {
-                    var directoryName = Path.GetDirectoryName(options.Output);
-
-                    basePath = string.IsNullOrEmpty(directoryName)
-                        ? options.Input + Path.DirectorySeparatorChar
-                        : Directory.CreateDirectory(directoryName).FullName;
-
-                    fileName = composeFileName(Path.GetFileNameWithoutExtension(options.Output));
-                }
-            }
-
-            var filePath = Path.Combine(basePath, fileName);
             var pathToTrim = _sanitizedInput;
 
-            using var fs = new FileStream(filePath, FileMode.OpenOrCreate);
-            using var zip = new ZipArchive(fs, options.OverWrite ? ZipArchiveMode.Create : ZipArchiveMode.Update);
+            using var fs = new FileStream(zipFilePath, _options.OverWrite ? FileMode.Create : FileMode.CreateNew);
+            using var zip = new ZipArchive(fs, ZipArchiveMode.Create);
             foreach (var file in filesToInclude)
             {
                 zip.CreateEntryFromFile(file, file[pathToTrim.Length..]);

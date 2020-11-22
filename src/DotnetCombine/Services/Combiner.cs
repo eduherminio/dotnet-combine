@@ -12,11 +12,13 @@ namespace DotnetCombine.Services
     public class Combiner
     {
         public const string OutputExtension = ".cs";
+
         private CombineOptions _options = null!;
 
         public async Task<int> Run(CombineOptions options)
         {
             options.Validate();
+
             try
             {
                 _options = options;
@@ -38,7 +40,6 @@ namespace DotnetCombine.Services
 
         private async Task Combine()
         {
-            var filePaths = FindFilesToInclude();
             var outputFilePath = GetOutputFilePath();
             if (!_options.OverWrite && File.Exists(outputFilePath))
             {
@@ -48,6 +49,7 @@ namespace DotnetCombine.Services
                     "You can also leave --output empty to always have a new one generated (and maybe use --prefix or --suffix to identify it).");
             }
 
+            var filePaths = FindFilesToInclude();
             var parsedFiles = await ParseFiles(filePaths);
 
             var includeSection = string.Concat(parsedFiles.SelectMany(p => p.Usings).Distinct().OrderBy(_ => _));
