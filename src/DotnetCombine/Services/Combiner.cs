@@ -31,12 +31,33 @@ namespace DotnetCombine.Services
                 var parsedFiles = await ParseFiles(filePaths);
                 await AggregateFiles(parsedFiles);
             }
+            catch (UnauthorizedAccessException e)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(e.Message);
+#if DEBUG
+                Console.WriteLine(e.GetType() + Environment.NewLine + e.StackTrace);
+#endif
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                if (OperatingSystem.IsWindows())
+                {
+                    Console.WriteLine($"If you intended to use '{_outputFilePath}' as output file, " +
+                        $"try running `dotnet-combine single-file` from an elevated prompt (using \"Run as Administrator\").");
+                }
+                else
+                {
+                    Console.WriteLine($"If you intended to use '{_outputFilePath}' as output file, " +
+                        $"try running `dotnet-combine single-file` as superuser (i.e. using 'sudo').");
+                }
+
+                return 1;
+            }
             catch (Exception e)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(e.Message);
 #if DEBUG
-                Console.WriteLine(e.StackTrace);
+                Console.WriteLine(e.GetType() + Environment.NewLine + e.StackTrace);
 #endif
                 return 1;
             }
