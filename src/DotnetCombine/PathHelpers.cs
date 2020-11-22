@@ -2,7 +2,7 @@
 
 namespace DotnetCombine
 {
-    public static class FileHelpers
+    public static class PathHelpers
     {
         public static string ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator(this string dirPath)
         {

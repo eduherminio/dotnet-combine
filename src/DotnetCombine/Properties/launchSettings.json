@@ -2,7 +2,7 @@
   "profiles": {
     "DotnetCombine": {
       "commandName": "Project",
-      "commandLineArgs": "zip C:\\dev\\FileParser\\src\\FileParser --output C:/dev/tmp/output.zip"
+      "commandLineArgs": "single-file --help"
     }
   }
 }

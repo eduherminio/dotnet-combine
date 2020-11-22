@@ -26,7 +26,7 @@ namespace DotnetCombine.Test.CompressorTests
                 Output = expectedZipFile
             };
 
-            var exitCode = _compressor.Run(options);
+            var exitCode = new Compressor(options).Run();
 
             // Assert - final file doesn't include original file's content
             Assert.Equal(0, exitCode);
@@ -54,7 +54,7 @@ namespace DotnetCombine.Test.CompressorTests
                 Output = expectedZipFile
             };
 
-            var exitCode = _compressor.Run(options);
+            var exitCode = new Compressor(options).Run();
 
             // Assert - final file is initial file
             Assert.Equal(1, exitCode);

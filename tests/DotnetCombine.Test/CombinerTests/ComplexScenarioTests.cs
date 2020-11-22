@@ -32,7 +32,7 @@ namespace DotnetCombine.Test.CombinerTests
             };
 
             // Act
-            var exitCode = await _combiner.Run(options);
+            var exitCode = await new Combiner(options).Run();
 
             // Assert
             Assert.Equal(0, exitCode);
@@ -56,7 +56,7 @@ namespace DotnetCombine.Test.CombinerTests
             };
 
             // Act
-            var exitCode = await _combiner.Run(options);
+            var exitCode = await new Combiner(options).Run();
 
             // Assert
             Assert.Equal(0, exitCode);

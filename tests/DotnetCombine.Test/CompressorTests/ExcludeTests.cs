@@ -26,7 +26,7 @@ namespace DotnetCombine.Test.CompressorTests
                 Input = InputDir,
             };
 
-            var exitCode = _compressor.Run(options);
+            var exitCode = new Compressor(options).Run();
 
             // Assert - excluded file is not included in the zip
             Assert.Equal(0, exitCode);
@@ -56,7 +56,7 @@ namespace DotnetCombine.Test.CompressorTests
                 Input = InputDir,
             };
 
-            var exitCode = _compressor.Run(options);
+            var exitCode = new Compressor(options).Run();
 
             // Assert - excluded file is not included in the zip
             Assert.Equal(0, exitCode);
@@ -86,7 +86,7 @@ namespace DotnetCombine.Test.CompressorTests
                 Input = InputDir,
             };
 
-            var exitCode = _compressor.Run(options);
+            var exitCode = new Compressor(options).Run();
 
             // Assert - excluded file is not included in the zip
             Assert.Equal(0, exitCode);

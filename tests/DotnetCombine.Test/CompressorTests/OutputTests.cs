@@ -27,7 +27,7 @@ namespace DotnetCombine.Test.CompressorTests
                 Input = InputDir
             };
 
-            var exitCode = _compressor.Run(options);
+            var exitCode = new Compressor(options).Run();
 
             // Assert
             Assert.Equal(0, exitCode);
@@ -57,7 +57,7 @@ namespace DotnetCombine.Test.CompressorTests
                 Input = InputDir
             };
 
-            var exitCode = _compressor.Run(options);
+            var exitCode = new Compressor(options).Run();
 
             // Assert
             Assert.Equal(0, exitCode);
@@ -91,7 +91,7 @@ namespace DotnetCombine.Test.CompressorTests
                 Input = InputDir
             };
 
-            var exitCode = _compressor.Run(options);
+            var exitCode = new Compressor(options).Run();
 
             // Assert
             Assert.Equal(0, exitCode);
@@ -116,7 +116,7 @@ namespace DotnetCombine.Test.CompressorTests
                 OverWrite = true,
             };
 
-            var exitCode = _compressor.Run(options);
+            var exitCode = new Compressor(options).Run();
 
             // Assert
             Assert.Equal(0, exitCode);
@@ -154,7 +154,7 @@ namespace DotnetCombine.Test.CompressorTests
                 Input = InputDir
             };
 
-            var exitCode = _compressor.Run(options);
+            var exitCode = new Compressor(options).Run();
 
             // Assert
             Assert.Equal(0, exitCode);
@@ -188,7 +188,7 @@ namespace DotnetCombine.Test.CompressorTests
                 Input = InputDir
             };
 
-            var exitCode = _compressor.Run(options);
+            var exitCode = new Compressor(options).Run();
 
             // Assert
             Assert.Equal(0, exitCode);
@@ -224,7 +224,7 @@ namespace DotnetCombine.Test.CompressorTests
                 Input = InputDir
             };
 
-            var exitCode = _compressor.Run(options);
+            var exitCode = new Compressor(options).Run();
 
             // Assert
             Assert.Equal(0, exitCode);
@@ -240,6 +240,32 @@ namespace DotnetCombine.Test.CompressorTests
 
             Assert.Single(zipFiles);
         }
+
+        [Fact]
+        public void NoOutputAndInputFile()
+        {
+            // Arrange
+            var options = new ZipOptions()
+            {
+                Input = $"{InputDir}/cs1.cs",
+                Prefix = nameof(NoOutputAndInputFile),
+                OverWrite = true,
+            };
+
+            // Act
+            var exitCode = new Compressor(options).Run();
+
+            // Assert
+            Assert.Equal(0, exitCode);
+
+            var existingFiles = Directory.GetFiles(InputDir);
+
+            var zipFiles = existingFiles.Where(f => Path.GetExtension(f) == Compressor.OutputExtension
+                                                && Path.GetFileNameWithoutExtension(f).Contains(options.Prefix));
+
+            Assert.NotEmpty(zipFiles);
+        }
+
 
         private static DateTime? ParseDateTimeFromFileName(string fileName)
         {

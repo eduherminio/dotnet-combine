@@ -26,7 +26,7 @@ namespace DotnetCombine.Test.CombinerTests.OptionsTests
                 Output = initialCsFile
             };
 
-            var exitCode = await _combiner.Run(options);
+            var exitCode = await new Combiner(options).Run();
 
             // Assert - final file isn't initial file
             Assert.Equal(0, exitCode);
@@ -51,7 +51,7 @@ namespace DotnetCombine.Test.CombinerTests.OptionsTests
                 Output = initialCsFile
             };
 
-            var exitCode = await _combiner.Run(options);
+            var exitCode = await new Combiner(options).Run();
 
             // Assert - final file is initial file
             Assert.Equal(1, exitCode);

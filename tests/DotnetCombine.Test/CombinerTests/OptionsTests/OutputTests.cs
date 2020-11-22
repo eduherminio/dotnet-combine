@@ -29,7 +29,7 @@ namespace DotnetCombine.Test.CombinerTests.OptionsTests
                 Suffix = CombinerTestsFixture.DefaultSuffix
             };
 
-            var exitCode = await _combiner.Run(options);
+            var exitCode = await new Combiner(options).Run();
 
             // Assert
             Assert.Equal(0, exitCode);
@@ -60,7 +60,7 @@ namespace DotnetCombine.Test.CombinerTests.OptionsTests
                 Suffix = CombinerTestsFixture.DefaultSuffix
             };
 
-            var exitCode = await _combiner.Run(options);
+            var exitCode = await new Combiner(options).Run();
 
             // Assert
             Assert.Equal(0, exitCode);
@@ -95,7 +95,7 @@ namespace DotnetCombine.Test.CombinerTests.OptionsTests
                 Suffix = CombinerTestsFixture.DefaultSuffix
             };
 
-            var exitCode = await _combiner.Run(options);
+            var exitCode = await new Combiner(options).Run();
 
             // Assert
             Assert.Equal(0, exitCode);
@@ -121,7 +121,7 @@ namespace DotnetCombine.Test.CombinerTests.OptionsTests
                 Suffix = CombinerTestsFixture.DefaultSuffix
             };
 
-            var exitCode = await _combiner.Run(options);
+            var exitCode = await new Combiner(options).Run();
 
             // Assert
             Assert.Equal(0, exitCode);
@@ -159,7 +159,7 @@ namespace DotnetCombine.Test.CombinerTests.OptionsTests
                 Input = InputDir
             };
 
-            var exitCode = await _combiner.Run(options);
+            var exitCode = await new Combiner(options).Run();
 
             // Assert
             Assert.Equal(0, exitCode);
@@ -193,7 +193,7 @@ namespace DotnetCombine.Test.CombinerTests.OptionsTests
                 Input = InputDir
             };
 
-            var exitCode = await _combiner.Run(options);
+            var exitCode = await new Combiner(options).Run();
 
             // Assert
             Assert.Equal(0, exitCode);
@@ -229,7 +229,7 @@ namespace DotnetCombine.Test.CombinerTests.OptionsTests
                 Input = InputDir
             };
 
-            var exitCode = await _combiner.Run(options);
+            var exitCode = await new Combiner(options).Run();
 
             // Assert
             Assert.Equal(0, exitCode);
@@ -244,6 +244,33 @@ namespace DotnetCombine.Test.CombinerTests.OptionsTests
                 && Path.GetExtension(f) == Combiner.OutputExtension);
 
             Assert.Single(csGeneratedFiles);
+        }
+
+        [Fact]
+        public async Task NoOutputAndInputFile()
+        {
+            // Arrange
+            var options = new CombineOptions()
+            {
+                Input = $"{InputDir}/ParsingException.cs",
+                Suffix = CombinerTestsFixture.DefaultSuffix,
+                Prefix = nameof(NoOutputAndInputFile),
+                OverWrite = true,
+            };
+
+            // Act
+            var exitCode = await new Combiner(options).Run();
+
+            // Assert
+            Assert.Equal(0, exitCode);
+
+            var existingFiles = Directory.GetFiles(InputDir);
+
+            var zipFiles = existingFiles.Where(f => Path.GetExtension(f) == Combiner.OutputExtension
+                                                && Path.GetFileNameWithoutExtension(f).Contains(options.Suffix)
+                                                && Path.GetFileNameWithoutExtension(f).Contains(options.Prefix));
+
+            Assert.NotEmpty(zipFiles);
         }
 
         private static DateTime? ParseDateTimeFromFileName(string fileName)

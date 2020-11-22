@@ -18,12 +18,5 @@ namespace DotnetCombine.Test.CompressorTests
         protected const int TotalTxtFiles = CompressorTestsFixture.TotalTxtFiles;
         protected const string InputDir = CompressorTestsFixture.InputDir;
         protected const string DefaultOutputDir = CompressorTestsFixture.DefaultOutputDir;
-
-        protected readonly Compressor _compressor;
-
-        public BaseCompressorTests()
-        {
-            _compressor = new Compressor();
-        }
     }
 }

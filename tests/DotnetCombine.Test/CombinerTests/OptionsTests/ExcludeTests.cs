@@ -26,7 +26,7 @@ namespace DotnetCombine.Test.CombinerTests.OptionsTests
                 Input = InputDir,
             };
 
-            var exitCode = await _combiner.Run(options);
+            var exitCode = await new Combiner(options).Run();
 
             // Assert - excluded file is not included in the zip
             Assert.Equal(0, exitCode);
@@ -55,7 +55,7 @@ namespace DotnetCombine.Test.CombinerTests.OptionsTests
                 Input = InputDir,
             };
 
-            var exitCode = await _combiner.Run(options);
+            var exitCode = await new Combiner(options).Run();
 
             // Assert - excluded file is not included in the zip
             Assert.Equal(0, exitCode);
@@ -84,7 +84,7 @@ namespace DotnetCombine.Test.CombinerTests.OptionsTests
                 Input = InputDir,
             };
 
-            var exitCode = await _combiner.Run(options);
+            var exitCode = await new Combiner(options).Run();
 
             // Assert - excluded file is not included in the zip
             Assert.Equal(0, exitCode);

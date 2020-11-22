@@ -11,34 +11,30 @@ namespace DotnetCombine.Services
     {
         public const string OutputExtension = ".zip";
 
-        private ZipOptions _options = null!;
-        private string _sanitizedInput = null!;
+        private readonly ZipOptions _options;
+        private string _outputFilePath = null!;
 
-        public int Run(ZipOptions options)
+        public Compressor(ZipOptions options)
         {
-            options.Validate();
+            _options = options;
+        }
 
+        public int Run()
+        {
             try
             {
-                _options = options;
-                _sanitizedInput = _options.Input.ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator();
+                ValidateInput();
 
-                string outputFilePath = GetOutputFilePath();
-                if (!_options.OverWrite && File.Exists(outputFilePath))
-                {
-                    throw new CombineException(
-                        $"The file {outputFilePath} already exists{Environment.NewLine}" +
-                        $"Did you mean to set --overwrite to true?{Environment.NewLine}" +
-                        "You can also leave --output empty to always have a new one generated (and maybe use --prefix or --suffix to identify it).");
-                }
-
-                List<string> filesToInclude = FindFilesToInclude();
-                GenerateZipFile(outputFilePath, filesToInclude);
+                var filesToInclude = FindFilesToInclude();
+                GenerateZipFile(filesToInclude);
             }
             catch (Exception e)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(e.Message);
+#if DEBUG
+                Console.WriteLine(e.StackTrace);
+#endif
                 return 1;
             }
             finally
@@ -46,7 +42,22 @@ namespace DotnetCombine.Services
                 Console.ResetColor();
             }
 
+            Console.WriteLine($"Output file: {_outputFilePath}");
             return 0;
+        }
+
+        private void ValidateInput()
+        {
+            _options.Validate();
+
+            _outputFilePath = GetOutputFilePath();
+            if (!_options.OverWrite && File.Exists(_outputFilePath))
+            {
+                throw new CombineException(
+                    $"The file {_outputFilePath} already exists{Environment.NewLine}" +
+                    $"Did you mean to set --overwrite to true?{Environment.NewLine}" +
+                    "You can also leave --output empty to always have a new one generated (and maybe use --prefix or --suffix to identify it).");
+            }
         }
 
         private string GetOutputFilePath()
@@ -58,7 +69,9 @@ namespace DotnetCombine.Services
                 OutputExtension;
 
             string fileName = composeFileName(UniqueIdGenerator.UniqueId());
-            string basePath = _sanitizedInput;
+            string basePath = File.Exists(_options.Input)
+                 ? Path.GetDirectoryName(_options.Input) ?? throw new CombineException($"{_options.Input} parent dir not found, try providing an absolute or relative path")
+                 : _options.Input!;
 
             if (_options.Output is not null)
             {
@@ -82,8 +95,13 @@ namespace DotnetCombine.Services
             return Path.Combine(basePath, fileName);
         }
 
-        private List<string> FindFilesToInclude()
+        private ICollection<string> FindFilesToInclude()
         {
+            if (File.Exists(_options.Input))
+            {
+                return new List<string> { _options.Input };
+            }
+
             var filesToExclude = _options.ExcludedItems.Where(item => !Path.EndsInDirectorySeparator(item));
 
             var dirsToExclude = _options.ExcludedItems
@@ -94,20 +112,21 @@ namespace DotnetCombine.Services
             foreach (var extension in _options.Extensions)
             {
                 filesToInclude.AddRange(
-                    Directory.GetFiles(_sanitizedInput, $"*.{extension.TrimStart('.')}", SearchOption.AllDirectories)
-                        .Where(f =>
-                            !dirsToExclude.Any(exclusion => $"{Path.GetDirectoryName(f)}{Path.DirectorySeparatorChar}"?.Contains(exclusion, StringComparison.OrdinalIgnoreCase) == true)
-                            && !filesToExclude.Any(exclusion => string.Equals(Path.GetFileName(f), exclusion, StringComparison.OrdinalIgnoreCase))));
+                    Directory.GetFiles(_options.Input, $"*.{extension.TrimStart('.')}", SearchOption.AllDirectories)
+                        .Where(f => !dirsToExclude.Any(exclusion => $"{Path.GetDirectoryName(f)}{Path.DirectorySeparatorChar}"?.Contains(exclusion, StringComparison.OrdinalIgnoreCase) == true)
+                                && !filesToExclude.Any(exclusion => string.Equals(Path.GetFileName(f), exclusion, StringComparison.OrdinalIgnoreCase))));
             }
 
             return filesToInclude;
         }
 
-        private void GenerateZipFile(string zipFilePath, List<string> filesToInclude)
+        private void GenerateZipFile(IEnumerable<string> filesToInclude)
         {
-            var pathToTrim = _sanitizedInput;
+            var pathToTrim = Directory.Exists(_options.Input)
+                ? _options.Input.ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator()
+                : string.Empty;
 
-            using var fs = new FileStream(zipFilePath, _options.OverWrite ? FileMode.Create : FileMode.CreateNew);
+            using var fs = new FileStream(_outputFilePath, _options.OverWrite ? FileMode.Create : FileMode.CreateNew);
             using var zip = new ZipArchive(fs, ZipArchiveMode.Create);
             foreach (var file in filesToInclude)
             {

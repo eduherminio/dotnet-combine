@@ -18,13 +18,6 @@ namespace DotnetCombine.Test.CombinerTests
         protected const string InputDir = CombinerTestsFixture.InputDir;
         protected const string DefaultOutputDir = CombinerTestsFixture.DefaultOutputDir;
 
-        protected readonly Combiner _combiner;
-
-        public BaseCombinerTests()
-        {
-            _combiner = new Combiner();
-        }
-
         protected static void CreateFile(string filePath, string fileContent = "")
         {
             var dir = Path.GetDirectoryName(filePath);
