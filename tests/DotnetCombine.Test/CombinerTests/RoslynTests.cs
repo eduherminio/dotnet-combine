@@ -1,55 +1,98 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using DotnetCombine.Options;
+using DotnetCombine.Services;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Emit;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace DotnetCombine.Test.CombinerTests
 {
-    public class RoslynTests
+    public class RoslynTests : BaseCombinerTests
     {
         [Fact]
-        public void Test()
+        public async Task RoslynTest()
         {
-            const string programText =
-@"using System;
-using System.Collections.Generic;
-using System.Text;
+            // Arrange
+            var input = "TestsInput/Combiner/ComplexScenario/";
+            var output = Path.Combine("ComplexScenarioTestsOutput", nameof(RoslynTests) + Combiner.OutputExtension);
 
-namespace HelloWorld
-{
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            Console.WriteLine(""Hello, World!"");
-        }
-    }
-}";
-
-            var tree = CSharpSyntaxTree.ParseText(programText);
-
-            var root = tree.GetCompilationUnitRoot();
-
-            var compilation = CSharpCompilation.Create("HelloWorld")
-                .AddReferences(MetadataReference.CreateFromFile(
-                    typeof(string).Assembly.Location))
-                .AddSyntaxTrees(tree);
-
-            var usings = root.Usings;
-            var systemName = usings[0].Name;
-
-            // Use the semantic model for symbol information:
-            var model = compilation.GetSemanticModel(tree);
-            SymbolInfo nameInfo = model.GetSymbolInfo(systemName);
-            var systemSymbol = (INamespaceSymbol?)nameInfo.Symbol;
-            foreach (INamespaceSymbol ns in systemSymbol?.GetNamespaceMembers() ?? Enumerable.Empty<INamespaceSymbol>())
+            var options = new CombineOptions
             {
-                Console.WriteLine(ns);
-            }
+                Input = input,
+                Output = output,
+                OverWrite = true
+            };
+
+            // Act
+            var exitCode = await _combiner.Run(options);
+
+            // Assert
+            Assert.Equal(0, exitCode);
+            Assert.True(File.Exists(output));
+
+            CheckFileContent(output);
+
+            await CheckCompilationResults(output);
+        }
+
+        private static void CheckFileContent(string output)
+        {
+            var files = Directory.GetFiles(InputDir, $"*{Combiner.OutputExtension}", SearchOption.AllDirectories);
+
+            var sourceLines = files.SelectMany(f => File.ReadAllLines(f));
+            var outputFileLines = File.ReadAllLines(output);
+
+            Assert.All(sourceLines, (sourceLine) => outputFileLines.Contains(sourceLine));
+        }
+
+        private async Task CheckCompilationResults(string output)
+        {
+            var compilationResults = await Compile(output);
+
+            Assert.Empty(compilationResults.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
+
+            // CS0105 : The using directive for 'xxxx' appeared previously in this namespace
+            // CS0105 : Using directive is unnecesary
+            Assert.Empty(compilationResults.Diagnostics.Where(d => d.Id != "CS0105" && d.Id != "CS8019"));
+
+            Assert.True(compilationResults.Success);
+        }
+
+        private async Task<EmitResult> Compile(string filePath)
+        {
+            var options = new CSharpCompilationOptions(
+                 OutputKind.ConsoleApplication,                     // Avoid CS8805
+                 optimizationLevel: OptimizationLevel.Release,
+                 allowUnsafe: true);
+
+            var tree = CSharpSyntaxTree.ParseText(await File.ReadAllTextAsync(filePath));
+
+            var references = new List<PortableExecutableReference>()
+            {
+                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),         // System.Private.CoreLib.dll (mscorelib)
+                MetadataReference.CreateFromFile(typeof(HttpClient).Assembly.Location),     // System.Net.Http.dll
+                MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),        // System.Console.dll
+                MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location)      // System.Linq.dll
+            };
+
+            var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
+
+            references.Add(MetadataReference.CreateFromFile(Path.Combine(assemblyPath!, "System.Runtime.dll")));
+
+            var compilation = CSharpCompilation.Create(
+                Path.GetFileName(filePath),
+                syntaxTrees: new[] { tree },
+                references: references,
+                options: options);
+
+            using var stream = new MemoryStream();
+            return compilation.Emit(stream);
         }
     }
 }

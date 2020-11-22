@@ -22,7 +22,8 @@ Overwrite the output file if it exists.")]
         public bool OverWrite { get; set; }
 
         [Option(longName: "exclude", Required = false, Separator = ';', Default = new[] { "bin/", "obj/" }, HelpText = @"
-Excluded files and directories, separated by semicolons (;)")]
+Excluded files and directories, separated by semicolons (;).
+No regex or globalling is supported (yet), sorry!")]
         public IEnumerable<string> ExcludedItems { get; set; } = new[] { "bin/", "obj/" };
 
         [Option(shortName: 'p', longName: "prefix", Required = false, HelpText = @"
@@ -33,12 +34,9 @@ Prefix for the output file.")]
 Suffix for the output file")]
         public string? Suffix { get; set; }
 
-        //[Option(shortName: 'm', longName: "merge-namespaces", Required = false, Default = false, HelpText = "Groups the code by namespace")]
-        //public bool MergeNamespaces { get; set; }
-
-        //        [Option(longName: "extensions", Required = false, Separator = ';', Default = new[] { ".cs" }, HelpText = @"
-        //Source file extensions to include.")]
-        //        public IEnumerable<string> Extensions { get; set; } = null!;
+        //        [Option(shortName: 'm', longName: "merge-namespaces", Required = false, Default = false, HelpText = @"
+        //Groups the output code by namespace.")]
+        public bool MergeNamespaces => false;
 
         public void Validate()
         {

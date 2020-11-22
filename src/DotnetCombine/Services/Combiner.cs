@@ -42,15 +42,12 @@ namespace DotnetCombine.Services
             var outputFilePath = GetOutputFilePath();
             var parsedFiles = await ParseFiles(filePaths);
 
-            var includeSection = string.Join(Environment.NewLine, parsedFiles.SelectMany(p => p.Includes).Distinct().OrderBy(_ => _));
-
-            var pathToTrim = Path.TrimEndingDirectorySeparator(_options.Input) + Path.AltDirectorySeparatorChar;
+            var includeSection = string.Concat(parsedFiles.SelectMany(p => p.Usings).Distinct().OrderBy(_ => _));
 
             var codeSection = new StringBuilder();
+
             foreach (var parsedFile in parsedFiles)
             {
-                codeSection.Append(Environment.NewLine);
-                codeSection.Append($"// {parsedFile.Filepath[pathToTrim.Length..]}");
                 codeSection.Append(Environment.NewLine);
                 codeSection.Append(string.Join(Environment.NewLine, parsedFile.Code));
                 codeSection.Append(Environment.NewLine);
@@ -119,12 +116,12 @@ namespace DotnetCombine.Services
                 .ToList();
         }
 
-        private async static Task<ICollection<SourceFile>> ParseFiles(ICollection<string> filePaths)
+        private async Task<ICollection<SourceFile>> ParseFiles(ICollection<string> filePaths)
         {
             var tasks = filePaths.Select(async filePath =>
             {
                 var parsedFile = new SourceFile(filePath);
-                await parsedFile.Parse();
+                await parsedFile.Parse(_options);
                 return parsedFile;
             });
 

@@ -1,4 +1,5 @@
 ﻿using DotnetCombine.Services;
+using System.IO;
 using Xunit;
 
 namespace DotnetCombine.Test.CombinerTests
@@ -22,6 +23,17 @@ namespace DotnetCombine.Test.CombinerTests
         public BaseCombinerTests()
         {
             _combiner = new Combiner();
+        }
+
+        protected static void CreateFile(string filePath, string fileContent = "")
+        {
+            var dir = Path.GetDirectoryName(filePath);
+            if (dir is not null && !Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+            File.WriteAllText(filePath, fileContent);
         }
     }
 }

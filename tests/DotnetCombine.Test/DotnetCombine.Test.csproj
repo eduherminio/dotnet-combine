@@ -22,16 +22,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="TestFiles\**\*.cs" />
-    <None Include="TestFiles\**\*.cs" />
+    <Compile Remove="TestsInput\**\*.cs" />
+    <None Include="TestsInput\**\*.cs" />
     <None Remove="C:\dev\dotnet-combine\resources\icon.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestFiles\**\*.txt">
+    <None Update="TestsInput\**\*.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestFiles\**\*.cs">
+    <None Update="TestsInput\**\*.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

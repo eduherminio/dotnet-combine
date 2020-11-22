@@ -7,9 +7,9 @@ namespace DotnetCombine.Test.CombinerTests
 {
     public class CombinerTestsFixture : IDisposable
     {
-        public const string InputDir = "TestFiles/Combiner";
-        public const string DefaultOutputDir = "CombinerTests";
-        public const string DefaultSuffix = "-generated";
+        public const string InputDir = "TestsInput/Combiner/FileParserProject";
+        public const string DefaultOutputDir = "CombinerTestsOutput";
+        public const string DefaultSuffix = "_generated";
 
         public CombinerTestsFixture()
         {
@@ -31,7 +31,7 @@ namespace DotnetCombine.Test.CombinerTests
         {
             if (Directory.Exists(DefaultOutputDir))
             {
-                //Directory.Delete(DefaultOutputDir, recursive: true);
+                Directory.Delete(DefaultOutputDir, recursive: true);
             }
         }
 

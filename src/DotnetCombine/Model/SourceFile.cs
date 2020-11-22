@@ -1,7 +1,8 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using DotnetCombine.CSharpSyntaxRewriters;
+using DotnetCombine.Options;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using SheepTools.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,44 +13,53 @@ namespace DotnetCombine.Model
 {
     internal class SourceFile
     {
-        public ICollection<string> Usings { get; set; }
+        private CompilationUnitSyntax _root = null!;
 
-        public string Filepath { get; init; }
+        public string Filepath { get; }
 
-        public string? Namespace { get; set; }
+        public IEnumerable<string> Usings => _root.Usings.Select(u => u.ToFullString()).Distinct();
 
-        public ICollection<string> Includes { get; set; }
+        public IEnumerable<string> Code => _root.Members.Select(m => m.ToFullString());
 
-
-        public ICollection<string> Code { get; set; }
+        public string? Namespace => _root.DescendantNodes().OfType<NamespaceDeclarationSyntax>()?.FirstOrDefault()?.Name.ToString();
 
         public SourceFile(string filePath)
         {
             Filepath = filePath;
-            Includes = new List<string>();
-            Usings = new List<string>();
-            Code = new List<string>();
         }
 
-        public async Task Parse()
+        public async Task Parse(CombineOptions options)
         {
-            var lines = await File.ReadAllLinesAsync(Filepath);
+            var syntaxTree = CSharpSyntaxTree.ParseText(await File.ReadAllTextAsync(Filepath));
+            CheckDiagnostics(syntaxTree.GetDiagnostics());
 
-            Includes = lines.TakeWhile(l =>
-                    l.StartsWith("using ", StringComparison.OrdinalIgnoreCase)
-                    || l.StartsWith("//")
-                    || l.StartsWith("/*")
-                    || l.StartsWith("*")
-                    || l.StartsWith(" *")
-                    || l.StartsWith("/*")
-                    || l.IsWhiteSpace())
-                .ToList();
+            var originalRoot = syntaxTree.GetCompilationUnitRoot();
 
-            Code = lines.Skip(Includes.Count).ToList();
+            var pathToTrim = Path.TrimEndingDirectorySeparator(options.Input) + Path.AltDirectorySeparatorChar;
 
-            Includes.RemoveAll(l => string.IsNullOrWhiteSpace(l));
+            var syntaxNode = options.MergeNamespaces
+                ? new AnnotateClassesRewriter(Filepath[pathToTrim.Length..]).Visit(originalRoot)
+                : new AnnotateNamespacesRewriter(Filepath[pathToTrim.Length..]).Visit(originalRoot);
 
-            Namespace = Code.FirstOrDefault(l => l.StartsWith("namespace "));
+            _root = syntaxNode.SyntaxTree.GetCompilationUnitRoot();
+        }
+
+        private void CheckDiagnostics(IEnumerable<Diagnostic> diagnostics)
+        {
+            var errors = diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error);
+
+            if (errors.Any())
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Errors detected in {Filepath}:{Environment.NewLine}{string.Join(Environment.NewLine, errors)}");
+            }
+
+            var warnings = diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning);
+            if (warnings.Any())
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"Warnings detected in {Filepath}:{Environment.NewLine}{string.Join(Environment.NewLine, warnings)}");
+            }
         }
     }
 }

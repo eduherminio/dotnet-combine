@@ -9,8 +9,8 @@ namespace DotnetCombine.Test.CompressorTests
     {
         public const int TotalCsFiles = 3;
         public const int TotalTxtFiles = 2;
-        public const string InputDir = "TestFiles/Compressor";
-        public const string DefaultOutputDir = "CompressorTests";
+        public const string InputDir = "TestsInput/Compressor";
+        public const string DefaultOutputDir = "CompressorTestsOutput";
 
         public CompressorTestsFixture()
         {

@@ -59,10 +59,5 @@ namespace DotnetCombine.Test.CombinerTests
 
             Assert.Empty(File.ReadAllLines(initialCsFile));
         }
-
-        private static void CreateFile(string filePath)
-        {
-            File.CreateText(filePath).Dispose();
-        }
     }
 }
