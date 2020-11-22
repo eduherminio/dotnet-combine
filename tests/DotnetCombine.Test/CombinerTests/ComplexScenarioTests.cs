@@ -22,7 +22,7 @@ namespace DotnetCombine.Test.CombinerTests
         {
             // Arrange
             var input = "TestsInput/Combiner/ComplexScenario/";
-            _outputPath = Path.Combine("ComplexScenarioTestsOutput", nameof(FileContentTest) + Combiner.OutputExtension);
+            _outputPath = Path.Combine("ComplexScenarioTestsOutput", nameof(OutputFileContent) + Combiner.OutputExtension);
 
             var options = new CombineOptions
             {
