@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace DotnetCombine.CSharpSyntaxRewriters
+namespace DotnetCombine.SyntaxRewriters
 {
     internal class BaseCustomRewriter : CSharpSyntaxRewriter
     {

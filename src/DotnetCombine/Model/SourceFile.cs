@@ -1,4 +1,4 @@
-﻿using DotnetCombine.CSharpSyntaxRewriters;
+﻿using DotnetCombine.SyntaxRewriters;
 using DotnetCombine.Options;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;

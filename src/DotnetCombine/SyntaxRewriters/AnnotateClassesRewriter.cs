@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Linq;
 
-namespace DotnetCombine.CSharpSyntaxRewriters
+namespace DotnetCombine.SyntaxRewriters
 {
     internal class AnnotateClassesRewriter : BaseCustomRewriter
     {
