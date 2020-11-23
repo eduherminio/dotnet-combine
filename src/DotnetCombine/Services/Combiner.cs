@@ -157,7 +157,7 @@ namespace DotnetCombine.Services
 
             var codeSection = new StringBuilder();
 
-            foreach (var parsedFile in parsedFiles)
+            foreach (var parsedFile in parsedFiles.OrderBy(file => file.Namespace?.Length))     // Top level statements first
             {
                 codeSection.Append(Environment.NewLine);
                 codeSection.Append(string.Join(Environment.NewLine, parsedFile.Code));
