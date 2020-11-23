@@ -23,6 +23,21 @@ jobs:
     steps:
     - uses: actions/checkout@v2.3.3
 
+    - name: Install dotnet-combine locally.
+      run: |
+        dotnet new tool-manifest
+        dotnet tool install dotnet-combine
+
+    - name: Create source code artifact using dotnet-combine.
+      run: dotnet dotnet-combine zip . --prefix geeky- --output ./test_artifacts/ --exclude "bin/;obj/;LICENSE;tests/"
+
+    - name: Upload source code artifact.
+      uses: actions/upload-artifact@v2
+      with:
+        name: source-code-ci-${{ github.run_number }}
+        path: test_artifacts/
+        if-no-files-found: error
+
     - name: Inject slug/short variables
       uses: rlespinasse/github-slug-action@v3.x
 
