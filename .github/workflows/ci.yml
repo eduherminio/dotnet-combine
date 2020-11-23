@@ -59,11 +59,10 @@ jobs:
       if: matrix.os == 'windows-latest'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_TOKEN2: ${{ secrets.SONAR_TOKEN2 }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN2 }}
       shell: powershell
       run: |
-        .\.sonar\scanner\dotnet-sonarscanner begin /k:"eduherminio_dotnet-combine" /o:"eduherminio-github" /d:sonar.login="${{ secrets.SONAR_TOKEN2 }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.coverageReportPaths="coveragereport/SonarQube.xml" /d:sonar.scanner.force-deprecated-java-version=true
+        .\.sonar\scanner\dotnet-sonarscanner begin /k:"eduherminio_dotnet-combine" /o:"eduherminio-github" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.coverageReportPaths="coveragereport/SonarQube.xml" /d:sonar.scanner.force-deprecated-java-version=true
 
     - name: '[Ubuntu] Set version to -ci-${{ github.run_number }}'
       if: matrix.os == 'ubuntu-latest'
@@ -121,8 +120,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_TOKEN2: ${{ secrets.SONAR_TOKEN2 }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN2 }}
       shell: powershell
       run: |
-        .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN2 }}"
+        .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
