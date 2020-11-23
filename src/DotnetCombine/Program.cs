@@ -12,12 +12,17 @@ namespace DotnetCombine
     {
         public static int Main(string[] args)
         {
-            var parser = new Parser(config => config.HelpWriter = null);
+            var parser = new Parser(config =>
+            {
+                config.HelpWriter = null;
+                config.EnableDashDash = true;
+            });
 
             var result = parser.ParseArguments<CombineOptions, ZipOptions>(args);
 
             return result.MapResult(
-                (ZipOptions options) => new Compressor().Run(options),
+                (CombineOptions options) => new Combiner(options).Run().Result,
+                (ZipOptions options) => new Compressor(options).Run(),
                 _ => DisplayHelp(result));
         }
 

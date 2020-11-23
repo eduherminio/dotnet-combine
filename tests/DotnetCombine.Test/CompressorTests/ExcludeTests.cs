@@ -1,4 +1,5 @@
 ﻿using DotnetCombine.Options;
+using DotnetCombine.Services;
 using System;
 using System.IO;
 using System.IO.Compression;
@@ -12,7 +13,7 @@ namespace DotnetCombine.Test.CompressorTests
         public void ExcludeFile()
         {
             // Arrange
-            var expectedZipFile = $"{Path.Combine(DefaultOutputDir, nameof(ExcludeFile))}.zip";
+            var expectedZipFile = Path.Combine(DefaultOutputDir, nameof(ExcludeFile)) + Compressor.OutputExtension;
             const string excludedFile = "cs1.cs";
 
             // Act
@@ -25,7 +26,7 @@ namespace DotnetCombine.Test.CompressorTests
                 Input = InputDir,
             };
 
-            var exitCode = _compressor.Run(options);
+            var exitCode = new Compressor(options).Run();
 
             // Assert - excluded file is not included in the zip
             Assert.Equal(0, exitCode);
@@ -42,7 +43,7 @@ namespace DotnetCombine.Test.CompressorTests
         public void ExcludeDir()
         {
             // Arrange
-            var expectedZipFile = $"{Path.Combine(DefaultOutputDir, nameof(ExcludeDir))}.zip";
+            var expectedZipFile = Path.Combine(DefaultOutputDir, nameof(ExcludeDir)) + Compressor.OutputExtension;
             const string excludedDir = "dir1/";
 
             // Act
@@ -55,7 +56,7 @@ namespace DotnetCombine.Test.CompressorTests
                 Input = InputDir,
             };
 
-            var exitCode = _compressor.Run(options);
+            var exitCode = new Compressor(options).Run();
 
             // Assert - excluded file is not included in the zip
             Assert.Equal(0, exitCode);
@@ -72,7 +73,7 @@ namespace DotnetCombine.Test.CompressorTests
         public void ExcludeFileAndDir()
         {
             // Arrange
-            var expectedZipFile = $"{Path.Combine(DefaultOutputDir, nameof(ExcludeFileAndDir), nameof(ExcludeFileAndDir))}.zip";
+            var expectedZipFile = Path.Combine(DefaultOutputDir, nameof(ExcludeFileAndDir), nameof(ExcludeFileAndDir)) + Compressor.OutputExtension;
             var excludes = new[] { "cs1.cs", "dir1/" };
 
             // Act
@@ -85,7 +86,7 @@ namespace DotnetCombine.Test.CompressorTests
                 Input = InputDir,
             };
 
-            var exitCode = _compressor.Run(options);
+            var exitCode = new Compressor(options).Run();
 
             // Assert - excluded file is not included in the zip
             Assert.Equal(0, exitCode);

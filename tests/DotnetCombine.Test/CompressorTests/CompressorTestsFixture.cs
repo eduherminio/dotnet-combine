@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DotnetCombine.Services;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -8,8 +9,8 @@ namespace DotnetCombine.Test.CompressorTests
     {
         public const int TotalCsFiles = 3;
         public const int TotalTxtFiles = 2;
-        public const string InputDir = "TestFiles/Compressor";
-        public const string DefaultOutputDir = "CompressorTests";
+        public const string InputDir = "TestsInput/Compressor";
+        public const string DefaultOutputDir = "CompressorTestsOutput";
 
         public CompressorTestsFixture()
         {
@@ -20,7 +21,7 @@ namespace DotnetCombine.Test.CompressorTests
 
         protected static void CleanInputDir()
         {
-            foreach (var file in Directory.GetFiles(InputDir).Where(f => Path.GetExtension(f) == ".zip"))
+            foreach (var file in Directory.GetFiles(InputDir).Where(f => Path.GetExtension(f) == Compressor.OutputExtension))
             {
                 File.Delete(file);
             }
