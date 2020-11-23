@@ -351,3 +351,7 @@ MigrationBackup/
 
 # Temporary folder
 tmp/
+
+# Code coverage
+coveragereport/
+reportgeneratortool/
