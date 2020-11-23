@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace DotnetCombine
 {
@@ -14,6 +15,10 @@ namespace DotnetCombine
         }
 
         public CombineException(string? message, Exception? innerException) : base(message, innerException)
+        {
+        }
+
+        protected CombineException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
     }
