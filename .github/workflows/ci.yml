@@ -92,15 +92,15 @@ jobs:
           ${{ env.ARTIFACT_DIR }}/*.snupkg
         if-no-files-found: error
 
-    - name: '[Ubuntu] Generate test coverage report'
+    - name: 'Generate test coverage report'
       uses: danielpalme/ReportGenerator-GitHub-Action@4.8.1
       with:
         reports: 'tests/**/*.cobertura.xml'
         targetdir: 'coveragereport'
         reporttypes: 'HtmlInline_AzurePipelines_Dark;SonarQube'
         assemblyfilters: '+*'
-        classfilters: '+*'
-        filefilters: '+*'
+        classfilters: '+*;*Exception'
+        filefilters: '+*;-Program.cs'
         verbosity: 'Info'
         title: '${{ env.PROJECT_NAME }} #${{ github.run_number }} (${{ env.GITHUB_REF_SLUG }})'
         tag: '${{ github.run_number }}_${{ github.run_id }}'
