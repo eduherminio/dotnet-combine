@@ -27,6 +27,10 @@ namespace DotnetCombine.Services
 
                 var filesToInclude = FindFilesToInclude();
                 GenerateZipFile(filesToInclude);
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Output file: {_outputFilePath}");
+                return 0;
             }
             catch (UnauthorizedAccessException e)
             {
@@ -62,9 +66,6 @@ namespace DotnetCombine.Services
             {
                 Console.ResetColor();
             }
-
-            Console.WriteLine($"Output file: {_outputFilePath}");
-            return 0;
         }
 
         private void ValidateInput()
@@ -116,7 +117,7 @@ namespace DotnetCombine.Services
             return Path.Combine(basePath, fileName);
         }
 
-        private ICollection<string> FindFilesToInclude()
+        private IList<string> FindFilesToInclude()
         {
             if (File.Exists(_options.Input))
             {
@@ -141,7 +142,7 @@ namespace DotnetCombine.Services
             return filesToInclude;
         }
 
-        private void GenerateZipFile(IEnumerable<string> filesToInclude)
+        private void GenerateZipFile(IList<string> filesToInclude)
         {
 #pragma warning disable S1854   // Sonar FP: github.com/SonarSource/sonar-dotnet/issues/3348
             var pathToTrim = Directory.Exists(_options.Input)
@@ -150,8 +151,15 @@ namespace DotnetCombine.Services
 
             using var fs = new FileStream(_outputFilePath, _options.OverWrite ? FileMode.Create : FileMode.CreateNew);
             using var zip = new ZipArchive(fs, ZipArchiveMode.Create);
-            foreach (var file in filesToInclude)
+            for (int i = 0; i < filesToInclude.Count; ++i)
             {
+                var file = filesToInclude[i];
+
+                if (_options.Verbose)
+                {
+                    Console.WriteLine($"\t* [{i + 1}/{filesToInclude.Count}] Aggregating {file}");
+                }
+
                 zip.CreateEntryFromFile(file, file[pathToTrim.Length..]);
             }
 #pragma warning restore S1854

@@ -59,7 +59,7 @@ Usage: dotnet-combine single-file <INPUT> [options]
                      If no filename is provided (i.e. --output dir/), a unique name will be used.
 
   -f, --overwrite    (Default: false)
-                     Overwrite the output file if it exists.
+                     Overwrites the output file (if it exists).
 
   --exclude          (Default: bin/ obj/)
                      Excluded files and directories, separated by semicolons (;).
@@ -67,6 +67,9 @@ Usage: dotnet-combine single-file <INPUT> [options]
   -p, --prefix       Prefix for the output file.
 
   -s, --suffix       Suffix for the output file
+
+  -v, --verbose      (Default: false)
+                     Verbose output. Shows combined files, progress, etc.
 
   --help             Display this help screen.
 
@@ -159,7 +162,7 @@ Usage: dotnet-combine zip <INPUT> [options]
                      File extensions to include, separated by semicolons (;).
 
   -f, --overwrite    (Default: false)
-                     Overwrite the output file if it exists.
+                     Overwrites the output file (if it exists).
 
   --exclude          (Default: bin/ obj/)
                      Excluded files and directories, separated by semicolons (;).
@@ -167,6 +170,9 @@ Usage: dotnet-combine zip <INPUT> [options]
   -p, --prefix       Prefix for the output file.
 
   -s, --suffix       Suffix for the output file.
+
+  -v, --verbose      (Default: false)
+                     Verbose output. Shows compressed files, progress, etc.
 
   --help             Display this help screen.
 

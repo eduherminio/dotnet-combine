@@ -23,7 +23,7 @@ File extensions to include, separated by semicolons (;).")]
         public IEnumerable<string> Extensions { get; set; } = new[] { ".cs", ".csproj", ".sln" };
 
         [Option(shortName: 'f', longName: "overwrite", Required = false, Default = false, HelpText = @"
-Overwrite the output file if it exists.")]
+Overwrites the output file (if it exists).")]
         public bool OverWrite { get; set; }
 
         [Option(longName: "exclude", Required = false, Separator = ';', Default = new[] { "bin/", "obj/" }, HelpText = @"
@@ -37,6 +37,10 @@ Prefix for the output file.")]
         [Option(shortName: 's', longName: "suffix", Required = false, HelpText = @"
 Suffix for the output file.")]
         public string? Suffix { get; set; }
+
+        [Option(shortName: 'v', longName: "verbose", Required = false, Default = false, HelpText = @"
+Verbose output. Shows compressed files, progress, etc.")]
+        public bool Verbose { get; set; }
 
         public void Validate()
         {
