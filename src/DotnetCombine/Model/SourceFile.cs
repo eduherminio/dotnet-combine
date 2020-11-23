@@ -39,9 +39,7 @@ namespace DotnetCombine.Model
                 ? options.Input.ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator()
                 : string.Empty;
 
-            var syntaxNode = options.MergeNamespaces
-                ? new AnnotateClassesRewriter(Filepath[pathToTrim.Length..]).Visit(originalRoot)
-                : new AnnotateNamespacesRewriter(Filepath[pathToTrim.Length..]).Visit(originalRoot);
+            var syntaxNode = new AnnotateNamespacesRewriter(Filepath[pathToTrim.Length..]).Visit(originalRoot);
 
             _root = syntaxNode.SyntaxTree.GetCompilationUnitRoot();
         }

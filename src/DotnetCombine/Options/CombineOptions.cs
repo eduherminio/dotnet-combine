@@ -34,10 +34,6 @@ Prefix for the output file.")]
 Suffix for the output file")]
         public string? Suffix { get; set; }
 
-        //        [Option(shortName: 'm', longName: "merge-namespaces", Required = false, Default = false, HelpText = @"
-        //Groups the output code by namespace.")]
-        public bool MergeNamespaces => false;
-
         public void Validate()
         {
             if (Input is null)
