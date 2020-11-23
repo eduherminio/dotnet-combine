@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
 using System.Linq;
 
 namespace DotnetCombine.SyntaxRewriters
@@ -20,7 +21,9 @@ namespace DotnetCombine.SyntaxRewriters
         {
             var existingTrivia = node.GetLeadingTrivia();
 
-            var newTrivia = existingTrivia.Prepend(SyntaxFactory.Comment($"// {_message}"));
+            var newTrivia = existingTrivia.Prepend(SyntaxFactory.Comment(
+                $"// {_message}" +
+                $"{(existingTrivia.ToString().EndsWith("\n") ? "" : Environment.NewLine)}"));
 
             return node.WithLeadingTrivia(newTrivia);
         }

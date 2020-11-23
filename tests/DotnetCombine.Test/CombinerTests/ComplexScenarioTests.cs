@@ -21,7 +21,7 @@ namespace DotnetCombine.Test.CombinerTests
         public async Task OutputFileContent()
         {
             // Arrange
-            var input = "TestsInput/Combiner/ComplexScenario/";
+            const string input = "TestsInput/Combiner/ComplexScenario/";
             _outputPath = Path.Combine("ComplexScenarioTestsOutput", nameof(OutputFileContent) + Combiner.OutputExtension);
 
             var options = new CombineOptions
@@ -38,14 +38,14 @@ namespace DotnetCombine.Test.CombinerTests
             Assert.Equal(0, exitCode);
             Assert.True(File.Exists(_outputPath));
 
-            CheckFileContent(_outputPath);
+            CheckFileContent(input, _outputPath);
         }
 
         [Fact]
         public async Task OutputFileCompilation()
         {
             // Arrange
-            var input = "TestsInput/Combiner/ComplexScenario/";
+            const string input = "TestsInput/Combiner/ComplexScenario/";
             _outputPath = Path.Combine("ComplexScenarioTestsOutput", nameof(OutputFileCompilation) + Combiner.OutputExtension);
 
             var options = new CombineOptions
@@ -65,17 +65,20 @@ namespace DotnetCombine.Test.CombinerTests
             await CheckCompilationResults(_outputPath);
         }
 
-        private static void CheckFileContent(string output)
+        private static void CheckFileContent(string inputPath, string outputPath)
         {
-            var files = Directory.GetFiles(InputDir, $"*{Combiner.OutputExtension}", SearchOption.AllDirectories);
+            var files = Directory.GetFiles(inputPath, $"*{Combiner.OutputExtension}", SearchOption.AllDirectories);
 
             var sourceLines = files.SelectMany(f => File.ReadAllLines(f));
-            var outputFileLines = File.ReadAllLines(output);
+            var outputFileLines = File.ReadAllLines(outputPath);
 
-            Assert.All(sourceLines, (sourceLine) => outputFileLines.Contains(sourceLine));
+            foreach (var line in sourceLines)
+            {
+                Assert.Contains(line, outputFileLines);
+            }
         }
 
-        private async Task CheckCompilationResults(string output)
+        private static async Task CheckCompilationResults(string output)
         {
             var compilationResults = await Compile(output);
 
@@ -88,7 +91,7 @@ namespace DotnetCombine.Test.CombinerTests
             Assert.True(compilationResults.Success);
         }
 
-        private async Task<EmitResult> Compile(string filePath)
+        private static async Task<EmitResult> Compile(string filePath)
         {
             var options = new CSharpCompilationOptions(
                  OutputKind.ConsoleApplication,                     // Avoid CS8805

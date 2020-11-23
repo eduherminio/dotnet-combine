@@ -42,12 +42,12 @@ namespace DotnetCombine.Services
                 if (OperatingSystem.IsWindows())
                 {
                     Console.WriteLine($"If you intended to use '{_outputFilePath}' as output file, " +
-                        $"try running `dotnet-combine single-file` from an elevated prompt (using \"Run as Administrator\").");
+                        "try running `dotnet-combine single-file` from an elevated prompt (using \"Run as Administrator\").");
                 }
                 else
                 {
                     Console.WriteLine($"If you intended to use '{_outputFilePath}' as output file, " +
-                        $"try running `dotnet-combine single-file` as superuser (i.e. using 'sudo').");
+                        "try running `dotnet-combine single-file` as superuser (i.e. using 'sudo').");
                 }
 
                 return 1;

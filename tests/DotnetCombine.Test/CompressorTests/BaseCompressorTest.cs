@@ -11,11 +11,13 @@ namespace DotnetCombine.Test.CompressorTests
     public class CompressorTestsCollection : ICollectionFixture<CompressorTestsFixture> { }
 
     [Collection(nameof(CompressorTestsFixture))]
-    public class BaseCompressorTests
+    public abstract class BaseCompressorTests
     {
         protected const int TotalCsFiles = CompressorTestsFixture.TotalCsFiles;
         protected const int TotalTxtFiles = CompressorTestsFixture.TotalTxtFiles;
         protected const string InputDir = CompressorTestsFixture.InputDir;
         protected const string DefaultOutputDir = CompressorTestsFixture.DefaultOutputDir;
+
+        protected BaseCompressorTests() { }
     }
 }
