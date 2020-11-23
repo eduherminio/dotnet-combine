@@ -82,7 +82,7 @@ namespace DotnetCombine.Test.CombinerTests
             Assert.Empty(compilationResults.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
 
             // CS0105 : The using directive for 'xxxx' appeared previously in this namespace
-            // CS0105 : Using directive is unnecesary
+            // CS0105 : Using directive is unnecessary
             Assert.Empty(compilationResults.Diagnostics.Where(d => d.Id != "CS0105" && d.Id != "CS8019"));
 
             Assert.True(compilationResults.Success);

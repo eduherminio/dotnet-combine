@@ -1,5 +1,4 @@
-﻿using DotnetCombine.Services;
-using Xunit;
+﻿using Xunit;
 
 namespace DotnetCombine.Test.CompressorTests
 {
