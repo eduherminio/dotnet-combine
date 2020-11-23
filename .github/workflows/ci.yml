@@ -23,10 +23,18 @@ jobs:
     steps:
     - uses: actions/checkout@v2.3.3
 
+    - name: Inject slug/short variables
+      uses: rlespinasse/github-slug-action@v3.x
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1.7.2
+      with:
+        dotnet-version: 5.0.100
+
     - name: Install dotnet-combine locally.
       run: |
         dotnet new tool-manifest
-        dotnet tool install dotnet-combine
+        dotnet tool install dotnet-combine --version 0.1.0-alpha.1
 
     - name: Create source code artifact using dotnet-combine.
       run: dotnet dotnet-combine zip . --prefix geeky- --output ./test_artifacts/ --exclude "bin/;obj/;LICENSE;tests/"
@@ -38,13 +46,6 @@ jobs:
         path: test_artifacts/
         if-no-files-found: error
 
-    - name: Inject slug/short variables
-      uses: rlespinasse/github-slug-action@v3.x
-
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1.7.2
-      with:
-        dotnet-version: 5.0.100
 
     - name: '[Windows] Cache SonarCloud packages'
       uses: actions/cache@v1
