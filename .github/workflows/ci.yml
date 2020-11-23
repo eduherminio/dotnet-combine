@@ -61,7 +61,7 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       shell: powershell
       run: |
-        .\.sonar\scanner\dotnet-sonarscanner begin /k:"${{ env.PROJECT_NAME }}" /o:"eduherminio-github" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.coverageReportPaths="coveragereport"
+        .\.sonar\scanner\dotnet-sonarscanner begin /k:"${{ env.PROJECT_NAME }}" /o:"eduherminio-github" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.coverageReportPaths="coveragereport/SonarQube.xml"
 
     - name: '[Ubuntu] Set version to -ci-${{ github.run_number }}'
       if: matrix.os == 'ubuntu-latest'
