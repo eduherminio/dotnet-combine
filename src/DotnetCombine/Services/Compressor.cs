@@ -133,7 +133,7 @@ namespace DotnetCombine.Services
             foreach (var extension in _options.Extensions)
             {
                 filesToInclude.AddRange(
-                    Directory.GetFiles(_options.Input, $"*.{extension.TrimStart('.')}", SearchOption.AllDirectories)
+                    Directory.GetFiles(_options.Input, $"*.{extension.TrimStart('*').TrimStart('.')}", SearchOption.AllDirectories)
                         .Where(f => !dirsToExclude.Any(exclusion => $"{Path.GetDirectoryName(f)}{Path.DirectorySeparatorChar}"?.Contains(exclusion, StringComparison.OrdinalIgnoreCase) == true)
                                 && !filesToExclude.Any(exclusion => string.Equals(Path.GetFileName(f), exclusion, StringComparison.OrdinalIgnoreCase))));
             }
