@@ -251,10 +251,10 @@ PRs are also more than welcome, but feel free to open an issue before carrying o
 [githubactionslink]: https://github.com/eduherminio/FileParser/actions
 [nugetlogo]: https://img.shields.io/nuget/v/dotnet-combine.svg?style=flat-square&label=nuget
 [nugetlink]: https://www.nuget.org/packages/dotnet-combine
-[coveragelogo]: https://sonarcloud.io/api/project_badges/measure?project=DotnetCombine&metric=coverage
-[coveragelink]: https://sonarcloud.io/dashboard?id=DotnetCombine
-[sonarqubelink]: https://sonarcloud.io/dashboard?id=DotnetCombine
-[sonarqualitylogo]: https://sonarcloud.io/api/project_badges/measure?project=DotnetCombine&metric=alert_status
-[sonarvulnerabilitieslogo]: https://sonarcloud.io/api/project_badges/measure?project=DotnetCombine&metric=vulnerabilities
-[sonarbugslogo]: https://sonarcloud.io/api/project_badges/measure?project=DotnetCombine&metric=bugs
-[sonarcodesmellslogo]: https://sonarcloud.io/api/project_badges/measure?project=DotnetCombine&metric=code_smells
+[coveragelogo]: https://sonarcloud.io/api/project_badges/measure?project=eduherminio_dotnet-combine&metric=coverage
+[coveragelink]: https://sonarcloud.io/dashboard?id=eduherminio_dotnet-combine
+[sonarqubelink]: https://sonarcloud.io/dashboard?id=eduherminio_dotnet-combine
+[sonarqualitylogo]: https://sonarcloud.io/api/project_badges/measure?project=eduherminio_dotnet-combine&metric=alert_status
+[sonarvulnerabilitieslogo]: https://sonarcloud.io/api/project_badges/measure?project=eduherminio_dotnet-combine&metric=vulnerabilities
+[sonarbugslogo]: https://sonarcloud.io/api/project_badges/measure?project=eduherminio_dotnet-combine&metric=bugs
+[sonarcodesmellslogo]: https://sonarcloud.io/api/project_badges/measure?project=eduherminio_dotnet-combine&metric=code_smells
