@@ -55,7 +55,7 @@ jobs:
         New-Item -Path .\.sonar\scanner -ItemType Directory
         dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
 
-    - name: '[Windows] Prepare sonar Analysis'
+    - name: '[Windows] Prepare SonarCloud analysis'
       if: matrix.os == 'windows-latest'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
@@ -116,7 +116,7 @@ jobs:
         path: coveragereport/
         if-no-files-found: error
 
-    - name: '[Windows] Perform Sonar analysis'
+    - name: '[Windows] Perform SonarCloud analysis'
       if: matrix.os == 'windows-latest'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
