@@ -35,11 +35,13 @@ namespace DotnetCombine.Model
 
             var originalRoot = syntaxTree.GetCompilationUnitRoot();
 
+#pragma warning disable S1854   // Sonar FP: github.com/SonarSource/sonar-dotnet/issues/3348
             var pathToTrim = Directory.Exists(options.Input)
                 ? options.Input.ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator()
                 : string.Empty;
 
             var syntaxNode = new AnnotateNamespacesRewriter(Filepath[pathToTrim.Length..]).Visit(originalRoot);
+#pragma warning restore S1854
 
             _root = syntaxNode.SyntaxTree.GetCompilationUnitRoot();
         }

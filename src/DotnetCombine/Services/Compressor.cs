@@ -143,6 +143,7 @@ namespace DotnetCombine.Services
 
         private void GenerateZipFile(IEnumerable<string> filesToInclude)
         {
+#pragma warning disable S1854   // Sonar FP: github.com/SonarSource/sonar-dotnet/issues/3348
             var pathToTrim = Directory.Exists(_options.Input)
                 ? _options.Input.ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator()
                 : string.Empty;
@@ -153,6 +154,7 @@ namespace DotnetCombine.Services
             {
                 zip.CreateEntryFromFile(file, file[pathToTrim.Length..]);
             }
+#pragma warning restore S1854
         }
     }
 }
