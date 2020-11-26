@@ -19,11 +19,11 @@ If no filename is provided (i.e. --output dir/), a unique name will be used.")]
         public string? Output { get; set; }
 
         [Option(shortName: 'f', longName: "overwrite", Required = false, Default = false, HelpText = @"
-Overwrite the output file if it exists.")]
+Overwrites the output file (if it exists).")]
         public bool OverWrite { get; set; }
 
         [Option(longName: "exclude", Required = false, Separator = ';', Default = new[] { "bin/", "obj/" }, HelpText = @"
-Excluded files and directories, separated by semicolons (;)")]
+Excluded files and directories, separated by semicolons (;).")]
         public IEnumerable<string> ExcludedItems { get; set; } = new[] { "bin/", "obj/" };
 
         [Option(shortName: 'p', longName: "prefix", Required = false, HelpText = @"
@@ -33,6 +33,10 @@ Prefix for the output file.")]
         [Option(shortName: 's', longName: "suffix", Required = false, HelpText = @"
 Suffix for the output file")]
         public string? Suffix { get; set; }
+
+        [Option(shortName: 'v', longName: "verbose", Required = false, Default = false, HelpText = @"
+Verbose output. Shows combined files, progress, etc.")]
+        public bool Verbose { get; set; }
 
         public void Validate()
         {

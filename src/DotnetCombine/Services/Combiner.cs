@@ -30,6 +30,10 @@ namespace DotnetCombine.Services
                 var filePaths = FindFilesToInclude();
                 var parsedFiles = await ParseFiles(filePaths);
                 await AggregateFiles(parsedFiles);
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Output file: {_outputFilePath}");
+                return 0;
             }
             catch (UnauthorizedAccessException e)
             {
@@ -65,9 +69,6 @@ namespace DotnetCombine.Services
             {
                 Console.ResetColor();
             }
-
-            Console.WriteLine($"Output file: {_outputFilePath}");
-            return 0;
         }
 
         private void ValidateInput()
@@ -157,8 +158,17 @@ namespace DotnetCombine.Services
 
             var codeSection = new StringBuilder();
 
-            foreach (var parsedFile in parsedFiles.OrderBy(file => file.Namespace?.Length))     // Top level statements first
+            var orderedFiles = parsedFiles.OrderBy(file => file.Namespace?.Length).ToList();     // Top level statements first
+
+            for (int i = 0; i < parsedFiles.Count; ++i)
             {
+                var parsedFile = orderedFiles[i];
+
+                if (_options.Verbose)
+                {
+                    Console.WriteLine($"\t* [{i + 1}/{orderedFiles.Count}] Aggregating {parsedFile.Filepath}");
+                }
+
                 codeSection.Append(Environment.NewLine);
                 codeSection.Append(string.Join(Environment.NewLine, parsedFile.Code));
                 codeSection.Append(Environment.NewLine);
