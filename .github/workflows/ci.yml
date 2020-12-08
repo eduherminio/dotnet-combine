@@ -29,7 +29,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1.7.2
       with:
-        dotnet-version: 5.0.100
+        dotnet-version: 5.0.x
 
     - name: '[Windows] Cache SonarCloud packages'
       uses: actions/cache@v2.1.3

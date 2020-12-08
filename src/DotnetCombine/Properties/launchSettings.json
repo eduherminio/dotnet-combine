@@ -2,7 +2,7 @@
   "profiles": {
     "DotnetCombine": {
       "commandName": "Project",
-      "commandLineArgs": "single-file --help"
+      "commandLineArgs": "zip C:/Users/Eduardo/Downloads -o \"C:/Users/Eduardo/Downloads/_results/jpg/\" --exclude \"_results/\" --extensions \"*.jpg\" --prefix jpg"
     },
     "WSL 2": {
       "commandName": "WSL2",
