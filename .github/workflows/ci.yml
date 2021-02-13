@@ -32,7 +32,7 @@ jobs:
         dotnet-version: 5.0.x
 
     - name: '[Windows] Cache SonarCloud packages'
-      uses: actions/cache@v2.1.3
+      uses: actions/cache@v2.1.4
       if: matrix.os == 'windows-latest'
       with:
         path: ~\sonar\cache
@@ -42,7 +42,7 @@ jobs:
     - name: '[Windows] Cache SonarCloud scanner'
       id: cache-sonar-scanner
       if: matrix.os == 'windows-latest'
-      uses: actions/cache@v2.1.3
+      uses: actions/cache@v2.1.4
       with:
         path: .\.sonar\scanner
         key: ${{ runner.os }}-sonar-scanner
