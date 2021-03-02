@@ -31,6 +31,12 @@ jobs:
       with:
         dotnet-version: 5.0.x
 
+    - name: Setup java (for SonarCloud)
+      uses: actions/setup-java@v1
+      if: matrix.os == 'windows-latest'
+      with:
+        java-version: 11
+
     - name: '[Windows] Cache SonarCloud packages'
       uses: actions/cache@v2.1.4
       if: matrix.os == 'windows-latest'
