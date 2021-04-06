@@ -36,6 +36,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       with:
         java-version: 11
+        distribution: 'zulu'
 
     - name: '[Windows] Cache SonarCloud packages'
       uses: actions/cache@v2.1.4
