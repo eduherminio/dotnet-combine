@@ -1,62 +1,59 @@
 ﻿using DotnetCombine.Options;
 using DotnetCombine.Services;
-using System.IO;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace DotnetCombine.Test.CombinerTests.OptionsTests
+namespace DotnetCombine.Test.CombinerTests.OptionsTests;
+
+public class OverwriteTests : BaseCombinerTests
 {
-    public class OverwriteTests : BaseCombinerTests
+    [Fact]
+    public async Task OverWrite_CreatesANewFile()
     {
-        [Fact]
-        public async Task OverWrite_CreatesANewFile()
+        // Arrange - create a pre-existing 'output' file
+        var initialCsFile = Path.Combine(DefaultOutputDir, nameof(OverWrite_CreatesANewFile)) + Combiner.OutputExtension;
+
+        CreateFile(initialCsFile);
+        Assert.True(File.Exists(initialCsFile));
+
+        // Act
+        var options = new CombineOptions()
         {
-            // Arrange - create a pre-existing 'output' file
-            var initialCsFile = Path.Combine(DefaultOutputDir, nameof(OverWrite_CreatesANewFile)) + Combiner.OutputExtension;
+            OverWrite = true,
+            Input = InputDir,
+            Output = initialCsFile
+        };
 
-            CreateFile(initialCsFile);
-            Assert.True(File.Exists(initialCsFile));
+        var exitCode = await new Combiner(options).Run();
 
-            // Act
-            var options = new CombineOptions()
-            {
-                OverWrite = true,
-                Input = InputDir,
-                Output = initialCsFile
-            };
+        // Assert - final file isn't initial file
+        Assert.Equal(0, exitCode);
+        Assert.True(File.Exists(initialCsFile));
+        Assert.NotEmpty(File.ReadAllLines(initialCsFile));
+    }
 
-            var exitCode = await new Combiner(options).Run();
+    [Fact]
+    public async Task NoOverwrite_ThrowsAnException()
+    {
+        // Arrange - create a pre-existing 'output' file
+        var initialCsFile = Path.Combine(DefaultOutputDir, nameof(NoOverwrite_ThrowsAnException)) + Combiner.OutputExtension;
 
-            // Assert - final file isn't initial file
-            Assert.Equal(0, exitCode);
-            Assert.True(File.Exists(initialCsFile));
-            Assert.NotEmpty(File.ReadAllLines(initialCsFile));
-        }
+        CreateFile(initialCsFile);
+        Assert.True(File.Exists(initialCsFile));
 
-        [Fact]
-        public async Task NoOverwrite_ThrowsAnException()
+        // Act
+        var options = new CombineOptions()
         {
-            // Arrange - create a pre-existing 'output' file
-            var initialCsFile = Path.Combine(DefaultOutputDir, nameof(NoOverwrite_ThrowsAnException)) + Combiner.OutputExtension;
+            OverWrite = false,
+            Input = InputDir,
+            Output = initialCsFile
+        };
 
-            CreateFile(initialCsFile);
-            Assert.True(File.Exists(initialCsFile));
+        var exitCode = await new Combiner(options).Run();
 
-            // Act
-            var options = new CombineOptions()
-            {
-                OverWrite = false,
-                Input = InputDir,
-                Output = initialCsFile
-            };
+        // Assert - final file is initial file
+        Assert.Equal(1, exitCode);
+        Assert.True(File.Exists(initialCsFile));
 
-            var exitCode = await new Combiner(options).Run();
-
-            // Assert - final file is initial file
-            Assert.Equal(1, exitCode);
-            Assert.True(File.Exists(initialCsFile));
-
-            Assert.Empty(File.ReadAllLines(initialCsFile));
-        }
+        Assert.Empty(File.ReadAllLines(initialCsFile));
     }
 }

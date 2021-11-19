@@ -2,91 +2,88 @@
 using CommandLine.Text;
 using DotnetCombine.Options;
 using DotnetCombine.Services;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 
-namespace DotnetCombine
+namespace DotnetCombine;
+
+public static class Program
 {
-    public static class Program
+    public static int Main(string[] args)
     {
-        public static int Main(string[] args)
+        var parser = new Parser(config =>
         {
-            var parser = new Parser(config =>
-            {
-                config.HelpWriter = null;
-                config.EnableDashDash = true;
-            });
+            config.HelpWriter = null;
+            config.EnableDashDash = true;
+        });
 
-            var result = parser.ParseArguments<CombineOptions, ZipOptions>(args);
+        var result = parser.ParseArguments<CombineOptions, ZipOptions>(args);
 
-            return result.MapResult(
-                (CombineOptions options) => new Combiner(options).Run().Result,
-                (ZipOptions options) => new Compressor(options).Run(),
-                _ => DisplayHelp(result));
-        }
+        return result.MapResult(
+            (CombineOptions options) => new Combiner(options).Run().Result,
+            (ZipOptions options) => new Compressor(options).Run(),
+            _ => DisplayHelp(result));
+    }
 
-        private static int DisplayHelp(ParserResult<object> result)
+    private static int DisplayHelp(ParserResult<object> result)
+    {
+        var helpText = HelpText.AutoBuild(result, helpText =>
         {
-            var helpText = HelpText.AutoBuild(result, helpText =>
+            var assembly = Assembly.GetEntryAssembly();
+            helpText.Heading = $"{assembly?.GetName().Name} {assembly?.GetName().Version}";
+            helpText.Copyright = "By Eduardo Cáceres - https://github.com/eduherminio/dotnet-combine";
+            helpText.MaximumDisplayWidth = 120;
+            helpText.AddNewLineBetweenHelpSections = true;
+            helpText.AdditionalNewLineAfterOption = true;
+
+            helpText.OptionComparison = OrderWithValuesFirst;
+
+            var typeUsage = new Dictionary<Type, string>
             {
-                var assembly = Assembly.GetEntryAssembly();
-                helpText.Heading = $"{assembly?.GetName().Name} {assembly?.GetName().Version}";
-                helpText.Copyright = "By Eduardo Cáceres - https://github.com/eduherminio/dotnet-combine";
-                helpText.MaximumDisplayWidth = 120;
-                helpText.AddNewLineBetweenHelpSections = true;
-                helpText.AdditionalNewLineAfterOption = true;
+                [typeof(ZipOptions)] = "Usage: dotnet-combine zip <INPUT> [options]",
+                [typeof(CombineOptions)] = "Usage: dotnet-combine single-file <INPUT> [options]"
+            };
 
-                helpText.OptionComparison = OrderWithValuesFirst;
-
-                var typeUsage = new Dictionary<Type, string>
-                {
-                    [typeof(ZipOptions)] = "Usage: dotnet-combine zip <INPUT> [options]",
-                    [typeof(CombineOptions)] = "Usage: dotnet-combine single-file <INPUT> [options]"
-                };
-
-                if (typeUsage.TryGetValue(result.TypeInfo.Current, out var usageMessage))
-                {
-                    helpText.AddPreOptionsLine(usageMessage);
-                }
-
-                return helpText;
-            });
-
-            Console.WriteLine(helpText);
-
-            return 1;
-        }
-
-        private static readonly Comparison<ComparableOption> OrderWithValuesFirst = (ComparableOption attr1, ComparableOption attr2) =>
-        {
-            if (attr1.IsOption && attr2.IsOption)
+            if (typeUsage.TryGetValue(result.TypeInfo.Current, out var usageMessage))
             {
-                if (attr1.Required && !attr2.Required)
-                {
-                    return -1;
-                }
-                else if (!attr1.Required && attr2.Required)
-                {
-                    return 1;
-                }
-
-                return attr1.Index > attr2.Index
-                    ? 1
-                    : -1;
+                helpText.AddPreOptionsLine(usageMessage);
             }
-            else if (attr1.IsOption && attr2.IsValue)
-            {
-                return 1;
-            }
-            else if (attr1.IsValue && attr2.IsOption)
+
+            return helpText;
+        });
+
+        Console.WriteLine(helpText);
+
+        return 1;
+    }
+
+    private static readonly Comparison<ComparableOption> OrderWithValuesFirst = (ComparableOption attr1, ComparableOption attr2) =>
+    {
+        if (attr1.IsOption && attr2.IsOption)
+        {
+            if (attr1.Required && !attr2.Required)
             {
                 return -1;
             }
-            else
+            else if (!attr1.Required && attr2.Required)
             {
                 return 1;
             }
-        };
-    }
+
+            return attr1.Index > attr2.Index
+                ? 1
+                : -1;
+        }
+        else if (attr1.IsOption && attr2.IsValue)
+        {
+            return 1;
+        }
+        else if (attr1.IsValue && attr2.IsOption)
+        {
+            return -1;
+        }
+        else
+        {
+            return 1;
+        }
+    };
 }
