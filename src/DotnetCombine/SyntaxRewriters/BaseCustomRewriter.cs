@@ -1,14 +1,13 @@
 ﻿using Microsoft.CodeAnalysis.CSharp;
 
-namespace DotnetCombine.SyntaxRewriters
-{
-    internal class BaseCustomRewriter : CSharpSyntaxRewriter
-    {
-        protected readonly string _message;
+namespace DotnetCombine.SyntaxRewriters;
 
-        public BaseCustomRewriter(string message)
-        {
-            _message = message;
-        }
+internal class BaseCustomRewriter : CSharpSyntaxRewriter
+{
+    protected readonly string _message;
+
+    public BaseCustomRewriter(string message)
+    {
+        _message = message;
     }
 }

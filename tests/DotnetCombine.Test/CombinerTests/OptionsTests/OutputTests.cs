@@ -1,283 +1,278 @@
 ﻿using DotnetCombine.Options;
 using DotnetCombine.Services;
-using System;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace DotnetCombine.Test.CombinerTests.OptionsTests
+namespace DotnetCombine.Test.CombinerTests.OptionsTests;
+
+public class OutputTests : BaseCombinerTests
 {
-    public class OutputTests : BaseCombinerTests
+    [Theory]
+    [InlineData("OutPutfilename")]
+    [InlineData("OutPutfilename.cpp")]
+    [InlineData("OutPutfilename" + Combiner.OutputExtension)]
+    [InlineData(DefaultOutputDir + "/OutPutfilename")]
+    [InlineData(DefaultOutputDir + "/nonexistingFolder/OutPutfilename")]
+    [InlineData(DefaultOutputDir + "/nonexistingFolder/OutPutfilename" + Combiner.OutputExtension)]
+    public async Task OutPut(string output)
     {
-        [Theory]
-        [InlineData("OutPutfilename")]
-        [InlineData("OutPutfilename.cpp")]
-        [InlineData("OutPutfilename" + Combiner.OutputExtension)]
-        [InlineData(DefaultOutputDir + "/OutPutfilename")]
-        [InlineData(DefaultOutputDir + "/nonexistingFolder/OutPutfilename")]
-        [InlineData(DefaultOutputDir + "/nonexistingFolder/OutPutfilename" + Combiner.OutputExtension)]
-        public async Task OutPut(string output)
+        // Act
+        var options = new CombineOptions()
         {
-            // Act
-            var options = new CombineOptions()
-            {
-                Output = output,
-                OverWrite = true,
-                Input = InputDir,
-                Suffix = CombinerTestsFixture.DefaultSuffix
-            };
+            Output = output,
+            OverWrite = true,
+            Input = InputDir,
+            Suffix = CombinerTestsFixture.DefaultSuffix
+        };
 
-            var exitCode = await new Combiner(options).Run();
+        var exitCode = await new Combiner(options).Run();
 
-            // Assert
-            Assert.Equal(0, exitCode);
-            var path = string.IsNullOrEmpty(Path.GetDirectoryName(output))
-                ? InputDir
-                : Path.GetDirectoryName(output)!;
-            var existingFiles = Directory.GetFiles(path);
+        // Assert
+        Assert.Equal(0, exitCode);
+        var path = string.IsNullOrEmpty(Path.GetDirectoryName(output))
+            ? InputDir
+            : Path.GetDirectoryName(output)!;
+        var existingFiles = Directory.GetFiles(path);
 
-            var zipFiles = existingFiles.Where(f => Path.GetFileNameWithoutExtension(f) == $"OutPutfilename{options.Suffix}" && Path.GetExtension(f) == Combiner.OutputExtension);
+        var zipFiles = existingFiles.Where(f => Path.GetFileNameWithoutExtension(f) == $"OutPutfilename{options.Suffix}" && Path.GetExtension(f) == Combiner.OutputExtension);
 
-            Assert.Single(zipFiles);
-        }
+        Assert.Single(zipFiles);
+    }
 
-        [Theory]
-        [InlineData(DefaultOutputDir + "/")]
-        [InlineData(DefaultOutputDir + "//")]
-        public async Task NoOutputFileName_GeneratesUniqueFileName(string outputDir)
+    [Theory]
+    [InlineData(DefaultOutputDir + "/")]
+    [InlineData(DefaultOutputDir + "//")]
+    public async Task NoOutputFileName_GeneratesUniqueFileName(string outputDir)
+    {
+        // Arrange
+        var timeBefore = ParseDateTimeFromFileName(UniqueIdGenerator.UniqueId());
+
+        // Act
+        var options = new CombineOptions()
         {
-            // Arrange
-            var timeBefore = ParseDateTimeFromFileName(UniqueIdGenerator.UniqueId());
+            Output = outputDir,
+            OverWrite = true,
+            Input = InputDir,
+            Suffix = CombinerTestsFixture.DefaultSuffix
+        };
 
-            // Act
-            var options = new CombineOptions()
-            {
-                Output = outputDir,
-                OverWrite = true,
-                Input = InputDir,
-                Suffix = CombinerTestsFixture.DefaultSuffix
-            };
+        var exitCode = await new Combiner(options).Run();
 
-            var exitCode = await new Combiner(options).Run();
+        // Assert
+        Assert.Equal(0, exitCode);
+        var existingFiles = Directory.GetFiles(outputDir);
 
-            // Assert
-            Assert.Equal(0, exitCode);
-            var existingFiles = Directory.GetFiles(outputDir);
-
-            var timeAfter = ParseDateTimeFromFileName(UniqueIdGenerator.UniqueId());
-            var csGeneratedFiles = existingFiles.Where(f =>
-            {
-                if (Path.GetExtension(f) == Combiner.OutputExtension)
-                {
-                    var fileDate = ParseDateTimeFromFileName(Path.GetFileNameWithoutExtension(f).Replace(options.Suffix, string.Empty));
-                    return fileDate is not null && fileDate >= timeBefore && fileDate <= timeAfter;
-                }
-
-                return false;
-            });
-
-            Assert.Single(csGeneratedFiles);
-        }
-
-        [Theory]
-        [InlineData(nameof(NoOutputDir_UsesInputDirAndOutputFileName), "")]
-        [InlineData(nameof(NoOutputDir_UsesInputDirAndOutputFileName), Combiner.OutputExtension)]
-        public async Task NoOutputDir_UsesInputDirAndOutputFileName(string fileName, string extension)
+        var timeAfter = ParseDateTimeFromFileName(UniqueIdGenerator.UniqueId());
+        var csGeneratedFiles = existingFiles.Where(f =>
         {
-            // Act
-            var options = new CombineOptions()
+            if (Path.GetExtension(f) == Combiner.OutputExtension)
             {
-                Output = fileName + extension,
-                OverWrite = true,
-                Input = InputDir,
-                Suffix = CombinerTestsFixture.DefaultSuffix
-            };
+                var fileDate = ParseDateTimeFromFileName(Path.GetFileNameWithoutExtension(f).Replace(options.Suffix, string.Empty));
+                return fileDate is not null && fileDate >= timeBefore && fileDate <= timeAfter;
+            }
 
-            var exitCode = await new Combiner(options).Run();
+            return false;
+        });
 
-            // Assert
-            Assert.Equal(0, exitCode);
-            var existingFiles = Directory.GetFiles(InputDir);
+        Assert.Single(csGeneratedFiles);
+    }
 
-            var csGeneratedFiles = existingFiles.Where(f => Path.GetFileNameWithoutExtension(f) == fileName + options.Suffix && Path.GetExtension(f) == Combiner.OutputExtension);
-
-            Assert.Single(csGeneratedFiles);
-        }
-
-        [Fact]
-        public async Task NoOutput_UsesInputDirAndGeneratesUniqueFileName()
+    [Theory]
+    [InlineData(nameof(NoOutputDir_UsesInputDirAndOutputFileName), "")]
+    [InlineData(nameof(NoOutputDir_UsesInputDirAndOutputFileName), Combiner.OutputExtension)]
+    public async Task NoOutputDir_UsesInputDirAndOutputFileName(string fileName, string extension)
+    {
+        // Act
+        var options = new CombineOptions()
         {
-            // Arrange
-            var timeBefore = ParseDateTimeFromFileName(UniqueIdGenerator.UniqueId());
+            Output = fileName + extension,
+            OverWrite = true,
+            Input = InputDir,
+            Suffix = CombinerTestsFixture.DefaultSuffix
+        };
 
-            // Act
-            var options = new CombineOptions()
-            {
-                Output = null,
-                Input = InputDir,
-                OverWrite = true,
-                Suffix = CombinerTestsFixture.DefaultSuffix
-            };
+        var exitCode = await new Combiner(options).Run();
 
-            var exitCode = await new Combiner(options).Run();
+        // Assert
+        Assert.Equal(0, exitCode);
+        var existingFiles = Directory.GetFiles(InputDir);
 
-            // Assert
-            Assert.Equal(0, exitCode);
-            var existingFiles = Directory.GetFiles(InputDir);
+        var csGeneratedFiles = existingFiles.Where(f => Path.GetFileNameWithoutExtension(f) == fileName + options.Suffix && Path.GetExtension(f) == Combiner.OutputExtension);
 
-            var timeAfter = ParseDateTimeFromFileName(UniqueIdGenerator.UniqueId());
-            var csGeneratedFiles = existingFiles.Where(f =>
-            {
-                if (Path.GetExtension(f) == Combiner.OutputExtension)
-                {
-                    var fileDate = ParseDateTimeFromFileName(Path.GetFileNameWithoutExtension(f).Replace(options.Suffix, string.Empty));
-                    return fileDate is not null && fileDate >= timeBefore && fileDate <= timeAfter;
-                }
+        Assert.Single(csGeneratedFiles);
+    }
 
-                return false;
-            });
+    [Fact]
+    public async Task NoOutput_UsesInputDirAndGeneratesUniqueFileName()
+    {
+        // Arrange
+        var timeBefore = ParseDateTimeFromFileName(UniqueIdGenerator.UniqueId());
 
-            Assert.Single(csGeneratedFiles);
-        }
-
-        [Theory]
-        [InlineData(DefaultOutputDir + "\\OutputPrefix\\")]
-        [InlineData(DefaultOutputDir + "\\OutputPrefix\\filename")]
-        [InlineData(DefaultOutputDir + "\\OutputPrefix\\filename" + Combiner.OutputExtension)]
-        public async Task OutputPrefix(string output)
+        // Act
+        var options = new CombineOptions()
         {
-            // Arrange
-            var prefix = $"prefix-{output.Replace("\\", "-")}-";
+            Output = null,
+            Input = InputDir,
+            OverWrite = true,
+            Suffix = CombinerTestsFixture.DefaultSuffix
+        };
 
-            // Act
-            var options = new CombineOptions()
-            {
-                Prefix = prefix,
-                Output = output,
-                Input = InputDir
-            };
+        var exitCode = await new Combiner(options).Run();
 
-            var exitCode = await new Combiner(options).Run();
+        // Assert
+        Assert.Equal(0, exitCode);
+        var existingFiles = Directory.GetFiles(InputDir);
 
-            // Assert
-            Assert.Equal(0, exitCode);
-            var path = string.IsNullOrEmpty(Path.GetDirectoryName(output))
-                ? InputDir
-                : Path.GetDirectoryName(output)!;
-            var existingFiles = Directory.GetFiles(path);
-
-            var csGeneratedFiles = existingFiles.Where(f =>
-                Path.GetFileNameWithoutExtension(f).StartsWith(prefix)
-                && Path.GetExtension(f) == Combiner.OutputExtension);
-
-            Assert.Single(csGeneratedFiles);
-        }
-
-        [Theory]
-        [InlineData(DefaultOutputDir + "\\OutputSuffix\\")]
-        [InlineData(DefaultOutputDir + "\\OutputSuffix\\filename")]
-        [InlineData(DefaultOutputDir + "\\OutputSuffix\\filename" + Combiner.OutputExtension)]
-        public async Task OutputSuffix(string output)
+        var timeAfter = ParseDateTimeFromFileName(UniqueIdGenerator.UniqueId());
+        var csGeneratedFiles = existingFiles.Where(f =>
         {
-            // Arrange
-            var suffix = $"-{output.Replace("\\", "-")}-suffix";
-
-            // Act
-            var options = new CombineOptions()
+            if (Path.GetExtension(f) == Combiner.OutputExtension)
             {
-                Suffix = suffix,
-                Output = output,
-                OverWrite = true,
-                Input = InputDir
-            };
+                var fileDate = ParseDateTimeFromFileName(Path.GetFileNameWithoutExtension(f).Replace(options.Suffix, string.Empty));
+                return fileDate is not null && fileDate >= timeBefore && fileDate <= timeAfter;
+            }
 
-            var exitCode = await new Combiner(options).Run();
+            return false;
+        });
 
-            // Assert
-            Assert.Equal(0, exitCode);
-            var path = string.IsNullOrEmpty(Path.GetDirectoryName(output))
-                ? InputDir
-                : Path.GetDirectoryName(output)!;
-            var existingFiles = Directory.GetFiles(path);
+        Assert.Single(csGeneratedFiles);
+    }
 
-            var csGeneratedFiles = existingFiles.Where(f =>
-                Path.GetFileNameWithoutExtension(f).EndsWith(suffix)
-                && Path.GetExtension(f) == Combiner.OutputExtension);
+    [Theory]
+    [InlineData(DefaultOutputDir + "\\OutputPrefix\\")]
+    [InlineData(DefaultOutputDir + "\\OutputPrefix\\filename")]
+    [InlineData(DefaultOutputDir + "\\OutputPrefix\\filename" + Combiner.OutputExtension)]
+    public async Task OutputPrefix(string output)
+    {
+        // Arrange
+        var prefix = $"prefix-{output.Replace("\\", "-")}-";
 
-            Assert.Single(csGeneratedFiles);
-        }
-
-        [Theory]
-        [InlineData(DefaultOutputDir + "\\OutputPrefixSuffix\\")]
-        [InlineData(DefaultOutputDir + "\\OutputPrefixSuffix\\filename")]
-        [InlineData(DefaultOutputDir + "\\OutputPrefixSuffix\\filename" + Combiner.OutputExtension)]
-        public async Task OutputPrefixSuffix(string output)
+        // Act
+        var options = new CombineOptions()
         {
-            // Arrange
-            var prefix = $"preprefix-{output.Replace("\\", "-")}-";
-            var suffix = $"-{output.Replace("\\", "-")}-suffixfix";
+            Prefix = prefix,
+            Output = output,
+            Input = InputDir
+        };
 
-            // Act
-            var options = new CombineOptions()
-            {
-                Prefix = prefix,
-                Suffix = suffix,
-                Output = output,
-                OverWrite = true,
-                Input = InputDir
-            };
+        var exitCode = await new Combiner(options).Run();
 
-            var exitCode = await new Combiner(options).Run();
+        // Assert
+        Assert.Equal(0, exitCode);
+        var path = string.IsNullOrEmpty(Path.GetDirectoryName(output))
+            ? InputDir
+            : Path.GetDirectoryName(output)!;
+        var existingFiles = Directory.GetFiles(path);
 
-            // Assert
-            Assert.Equal(0, exitCode);
-            var path = string.IsNullOrEmpty(Path.GetDirectoryName(output))
-                ? InputDir
-                : Path.GetDirectoryName(output)!;
-            var existingFiles = Directory.GetFiles(path);
+        var csGeneratedFiles = existingFiles.Where(f =>
+            Path.GetFileNameWithoutExtension(f).StartsWith(prefix)
+            && Path.GetExtension(f) == Combiner.OutputExtension);
 
-            var csGeneratedFiles = existingFiles.Where(f =>
-                Path.GetFileNameWithoutExtension(f).StartsWith(prefix)
-                && Path.GetFileNameWithoutExtension(f).EndsWith(suffix)
-                && Path.GetExtension(f) == Combiner.OutputExtension);
+        Assert.Single(csGeneratedFiles);
+    }
 
-            Assert.Single(csGeneratedFiles);
-        }
+    [Theory]
+    [InlineData(DefaultOutputDir + "\\OutputSuffix\\")]
+    [InlineData(DefaultOutputDir + "\\OutputSuffix\\filename")]
+    [InlineData(DefaultOutputDir + "\\OutputSuffix\\filename" + Combiner.OutputExtension)]
+    public async Task OutputSuffix(string output)
+    {
+        // Arrange
+        var suffix = $"-{output.Replace("\\", "-")}-suffix";
 
-        [Fact]
-        public async Task NoOutputAndInputFile()
+        // Act
+        var options = new CombineOptions()
         {
-            // Arrange
-            var options = new CombineOptions()
-            {
-                Input = $"{InputDir}/ParsingException.cs",
-                Suffix = CombinerTestsFixture.DefaultSuffix,
-                Prefix = nameof(NoOutputAndInputFile),
-                OverWrite = true,
-            };
+            Suffix = suffix,
+            Output = output,
+            OverWrite = true,
+            Input = InputDir
+        };
 
-            // Act
-            var exitCode = await new Combiner(options).Run();
+        var exitCode = await new Combiner(options).Run();
 
-            // Assert
-            Assert.Equal(0, exitCode);
+        // Assert
+        Assert.Equal(0, exitCode);
+        var path = string.IsNullOrEmpty(Path.GetDirectoryName(output))
+            ? InputDir
+            : Path.GetDirectoryName(output)!;
+        var existingFiles = Directory.GetFiles(path);
 
-            var existingFiles = Directory.GetFiles(InputDir);
+        var csGeneratedFiles = existingFiles.Where(f =>
+            Path.GetFileNameWithoutExtension(f).EndsWith(suffix)
+            && Path.GetExtension(f) == Combiner.OutputExtension);
 
-            var zipFiles = existingFiles.Where(f => Path.GetExtension(f) == Combiner.OutputExtension
-                                                && Path.GetFileNameWithoutExtension(f).Contains(options.Suffix)
-                                                && Path.GetFileNameWithoutExtension(f).Contains(options.Prefix));
+        Assert.Single(csGeneratedFiles);
+    }
 
-            Assert.NotEmpty(zipFiles);
-        }
+    [Theory]
+    [InlineData(DefaultOutputDir + "\\OutputPrefixSuffix\\")]
+    [InlineData(DefaultOutputDir + "\\OutputPrefixSuffix\\filename")]
+    [InlineData(DefaultOutputDir + "\\OutputPrefixSuffix\\filename" + Combiner.OutputExtension)]
+    public async Task OutputPrefixSuffix(string output)
+    {
+        // Arrange
+        var prefix = $"preprefix-{output.Replace("\\", "-")}-";
+        var suffix = $"-{output.Replace("\\", "-")}-suffixfix";
 
-        private static DateTime? ParseDateTimeFromFileName(string fileName)
+        // Act
+        var options = new CombineOptions()
         {
-            return DateTime.TryParseExact(fileName, UniqueIdGenerator.DateFormat, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out var date)
-                ? (DateTime?)date
-                : null;
-        }
+            Prefix = prefix,
+            Suffix = suffix,
+            Output = output,
+            OverWrite = true,
+            Input = InputDir
+        };
+
+        var exitCode = await new Combiner(options).Run();
+
+        // Assert
+        Assert.Equal(0, exitCode);
+        var path = string.IsNullOrEmpty(Path.GetDirectoryName(output))
+            ? InputDir
+            : Path.GetDirectoryName(output)!;
+        var existingFiles = Directory.GetFiles(path);
+
+        var csGeneratedFiles = existingFiles.Where(f =>
+            Path.GetFileNameWithoutExtension(f).StartsWith(prefix)
+            && Path.GetFileNameWithoutExtension(f).EndsWith(suffix)
+            && Path.GetExtension(f) == Combiner.OutputExtension);
+
+        Assert.Single(csGeneratedFiles);
+    }
+
+    [Fact]
+    public async Task NoOutputAndInputFile()
+    {
+        // Arrange
+        var options = new CombineOptions()
+        {
+            Input = $"{InputDir}/ParsingException.cs",
+            Suffix = CombinerTestsFixture.DefaultSuffix,
+            Prefix = nameof(NoOutputAndInputFile),
+            OverWrite = true,
+        };
+
+        // Act
+        var exitCode = await new Combiner(options).Run();
+
+        // Assert
+        Assert.Equal(0, exitCode);
+
+        var existingFiles = Directory.GetFiles(InputDir);
+
+        var zipFiles = existingFiles.Where(f => Path.GetExtension(f) == Combiner.OutputExtension
+                                            && Path.GetFileNameWithoutExtension(f).Contains(options.Suffix)
+                                            && Path.GetFileNameWithoutExtension(f).Contains(options.Prefix));
+
+        Assert.NotEmpty(zipFiles);
+    }
+
+    private static DateTime? ParseDateTimeFromFileName(string fileName)
+    {
+        return DateTime.TryParseExact(fileName, UniqueIdGenerator.DateFormat, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out var date)
+            ? (DateTime?)date
+            : null;
     }
 }

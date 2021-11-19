@@ -1,12 +1,9 @@
-﻿using System.IO;
+﻿namespace DotnetCombine;
 
-namespace DotnetCombine
+public static class PathHelpers
 {
-    public static class PathHelpers
+    public static string ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator(this string dirPath)
     {
-        public static string ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator(this string dirPath)
-        {
-            return Path.TrimEndingDirectorySeparator(dirPath) + Path.DirectorySeparatorChar;
-        }
+        return Path.TrimEndingDirectorySeparator(dirPath) + Path.DirectorySeparatorChar;
     }
 }
