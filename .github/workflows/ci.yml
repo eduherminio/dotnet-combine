@@ -26,10 +26,16 @@ jobs:
     - name: Inject slug/short variables
       uses: rlespinasse/github-slug-action@v3.x
 
-    - name: Setup .NET Core
+    - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 6.0.x
+
+    - name: Setup .NET 5 fpr sonar
+      uses: actions/setup-dotnet@v1
+      if: matrix.os == 'windows-latest'
+      with:
+        dotnet-version: 5.0.x
 
     - name: Setup java (for SonarCloud)
       uses: actions/setup-java@v2
