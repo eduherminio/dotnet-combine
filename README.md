@@ -16,7 +16,7 @@
 
 ## Installing `dotnet-combine`
 
-.NET 5 SDK is required to use this tool. You can download it from [here](https://dotnet.microsoft.com/download/dotnet/5.0).
+.NET 6 SDK is required to use this tool. You can download it from [here](https://dotnet.microsoft.com/download/dotnet/6.0).
 
 The tool can be installed globally by running:
 
