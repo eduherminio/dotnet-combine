@@ -139,7 +139,7 @@ This tool can be used for more general purposes than the previous one. Some of t
 
 - Extracting all `.css` files from a web development project.
 
-- Extracting all the relevant source code files (`.sln`, `.csproj`, `.cs`, `.razor`, `.xaml`, etc.) from your .NET project in a GitHub Action step, to be able to make them available as an artifact.
+- Extracting all the relevant source code files (`.sln`, `.csproj`, `.cs`, `.json`, `.razor`, `.xaml`, etc.) from your .NET project in a GitHub Action step, to be able to make them available as an artifact.
 
 - ...
 
@@ -158,7 +158,7 @@ Usage: dotnet-combine zip <INPUT> [options]
                      directory.
                      If no filename is provided (i.e. --output dir/), a unique name will be used.
 
-  --extensions       (Default: .sln .csproj .cs)
+  --extensions       (Default: .sln .csproj .cs .json)
                      File extensions to include, separated by semicolons (;).
 
   -f, --overwrite    (Default: false)

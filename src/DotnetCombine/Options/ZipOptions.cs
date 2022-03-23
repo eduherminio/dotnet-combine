@@ -15,9 +15,9 @@ If no dir path is provided (i.e. --output file.cs), the file will be created in 
 If no filename is provided (i.e. --output dir/), a unique name will be used.")]
     public string? Output { get; set; }
 
-    [Option(longName: "extensions", Required = false, Separator = ';', Default = new[] { ".sln", ".csproj", ".cs" }, HelpText = @"
+    [Option(longName: "extensions", Required = false, Separator = ';', Default = new[] { ".sln", ".csproj", ".cs", ".json" }, HelpText = @"
 File extensions to include, separated by semicolons (;).")]
-    public IEnumerable<string> Extensions { get; set; } = new[] { ".cs", ".csproj", ".sln" };
+    public IEnumerable<string> Extensions { get; set; } = new[] { ".sln", ".csproj", ".cs", ".json" };
 
     [Option(shortName: 'f', longName: "overwrite", Required = false, Default = false, HelpText = @"
 Overwrites the output file (if it exists).")]
