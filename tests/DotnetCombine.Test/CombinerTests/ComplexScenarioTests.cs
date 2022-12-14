@@ -68,7 +68,14 @@ public class ComplexScenarioTests : BaseCombinerTests, IDisposable
 
         foreach (var line in sourceLines)
         {
-            Assert.Contains(line, outputFileLines);
+            if (line.StartsWith("namespace") && line.EndsWith(';'))
+            {
+                Assert.DoesNotContain(line, outputFileLines);
+            }
+            else
+            {
+                Assert.Contains(line, outputFileLines);
+            }
         }
     }
 
