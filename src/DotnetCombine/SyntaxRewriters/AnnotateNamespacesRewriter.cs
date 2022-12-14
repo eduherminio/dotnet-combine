@@ -8,21 +8,34 @@ internal class AnnotateNamespacesRewriter : BaseCustomRewriter
 {
     public AnnotateNamespacesRewriter(string message) : base(message) { }
 
-    public override SyntaxNode VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
+    public override SyntaxNode? VisitFileScopedNamespaceDeclaration(FileScopedNamespaceDeclarationSyntax node)
     {
-        var newNode = AddComment(node);
+        var namespaceDeclaration = ConvertNamespaceTransform.ConvertFileScopedNamespace(node);
+        var nodeWithComment = AddComment(namespaceDeclaration);
 
-        return base.VisitNamespaceDeclaration(newNode)!;
+        return base.VisitNamespaceDeclaration(nodeWithComment);
     }
 
-    private NamespaceDeclarationSyntax AddComment(NamespaceDeclarationSyntax node)
+    public override SyntaxNode? VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
     {
-        var existingTrivia = node.GetLeadingTrivia();
+        var nodeWithComment = AddComment(node);
 
-        var newTrivia = existingTrivia.Prepend(SyntaxFactory.Comment(
-            $"// {_message}" +
-            $"{(existingTrivia.ToString().EndsWith("\n") ? "" : Environment.NewLine)}"));
+        return base.VisitNamespaceDeclaration(nodeWithComment)!;
+    }
 
-        return node.WithLeadingTrivia(newTrivia);
+    private T AddComment<T>(T node)
+        where T : BaseNamespaceDeclarationSyntax
+    {
+        SyntaxTrivia TriviaToAdd(SyntaxTriviaList? existingTrivia = null) => SyntaxFactory.Comment($"// {_message}" +
+            $"{(existingTrivia?.ToString().EndsWith("\n") == true ? "" : Environment.NewLine)}");
+
+        if (node.HasLeadingTrivia)
+        {
+            var existingTrivia = node.GetLeadingTrivia();
+
+            return node.WithLeadingTrivia(existingTrivia.Prepend(TriviaToAdd(existingTrivia)));
+        }
+
+        return node.WithLeadingTrivia(TriviaToAdd());
     }
 }
