@@ -71,6 +71,9 @@ Usage: dotnet-combine single-file <INPUT> [options]
   -v, --verbose      (Default: false)
                      Verbose output. Shows combined files, progress, etc.
 
+  --format           (Default: false)
+                     Formats output file. Enabling it slows down file generation process.
+
   --help             Display this help screen.
 
   --version          Display version information.
