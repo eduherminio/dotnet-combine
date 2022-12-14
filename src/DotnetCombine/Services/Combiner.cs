@@ -130,15 +130,24 @@ public class Combiner
             return new List<string> { _options.Input };
         }
 
-        var filesToExclude = _options.ExcludedItems.Where(item => !Path.EndsInDirectorySeparator(item));
+        var filesToExclude = _options.ExcludedItems
+            .Where(item => !Path.EndsInDirectorySeparator(item))
+            .ToList();
+
+        filesToExclude.Add(Path.GetFileName(_outputFilePath));
 
         var dirsToExclude = _options.ExcludedItems
             .Except(filesToExclude)
             .Select(dir => Path.DirectorySeparatorChar + dir.ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator());
 
         return Directory.GetFiles(_options.Input, $"*{OutputExtension}", SearchOption.AllDirectories)
-            .Where(filePath => dirsToExclude?.Any(exclusion => $"{Path.GetDirectoryName(filePath)}{Path.DirectorySeparatorChar}"?.Contains(exclusion, StringComparison.OrdinalIgnoreCase) == true) == false
-                            && filesToExclude?.Any(exclusion => string.Equals(Path.GetFileName(filePath), exclusion, StringComparison.OrdinalIgnoreCase)) == false)
+            .Where(filePath =>
+                dirsToExclude?.Any(exclusion =>
+                    $"{Path.GetDirectoryName(filePath)}{Path.DirectorySeparatorChar}"?.Contains(exclusion, StringComparison.OrdinalIgnoreCase) == true)
+                    == false
+                && filesToExclude?.Any(exclusion => string.Equals(Path.GetFileName(filePath), exclusion, StringComparison.OrdinalIgnoreCase))
+                    == false
+            && !UniqueIdGenerator.GeneratedFileNameRegex.IsMatch(Path.GetFileName(filePath)))
             .ToList();
     }
 
