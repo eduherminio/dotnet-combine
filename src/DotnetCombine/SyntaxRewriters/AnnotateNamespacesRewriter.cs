@@ -10,16 +10,17 @@ internal class AnnotateNamespacesRewriter : BaseCustomRewriter
 
     public override SyntaxNode? VisitFileScopedNamespaceDeclaration(FileScopedNamespaceDeclarationSyntax node)
     {
-        var newNewNode = ConvertNamespaceTransform.ConvertFileScopedNamespace(node);
-        var newNode = AddComment(newNewNode);
-        return base.VisitNamespaceDeclaration(newNode);
+        var namespaceDeclaration = ConvertNamespaceTransform.ConvertFileScopedNamespace(node);
+        var nodeWithComment = AddComment(namespaceDeclaration);
+
+        return base.VisitNamespaceDeclaration(nodeWithComment);
     }
 
     public override SyntaxNode? VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
     {
-        var newNode = AddComment(node);
+        var nodeWithComment = AddComment(node);
 
-        return base.VisitNamespaceDeclaration(newNode)!;
+        return base.VisitNamespaceDeclaration(nodeWithComment)!;
     }
 
     private T AddComment<T>(T node)

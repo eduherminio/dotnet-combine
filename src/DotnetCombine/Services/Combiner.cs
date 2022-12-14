@@ -18,6 +18,9 @@ public class Combiner
 
     public async Task<int> Run()
     {
+#if DEBUG
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+#endif
         try
         {
             ValidateInput();
@@ -63,6 +66,10 @@ public class Combiner
         finally
         {
             Console.ResetColor();
+
+#if DEBUG
+            Console.WriteLine($"Total time: {sw.ElapsedMilliseconds}ms");
+#endif
         }
     }
 

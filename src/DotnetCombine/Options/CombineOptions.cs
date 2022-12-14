@@ -35,6 +35,10 @@ Suffix for the output file")]
 Verbose output. Shows combined files, progress, etc.")]
     public bool Verbose { get; set; }
 
+    [Option(longName: "format", Required = false, Default = false, HelpText = @"
+Formats output file. Enabling it slows down file generation process.")]
+    public bool Format { get; set; }
+
     public void Validate()
     {
         if (Input is null)

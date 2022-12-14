@@ -3,6 +3,7 @@ using DotnetCombine.Options;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Formatting;
 
 namespace DotnetCombine.Model;
 
@@ -35,6 +36,12 @@ internal class SourceFile
             : string.Empty;
 
         var syntaxNode = new AnnotateNamespacesRewriter(Filepath[pathToTrim.Length..]).Visit(originalRoot);
+
+        if (options.Format)
+        {
+            using var workspace = new AdhocWorkspace();
+            syntaxNode = Formatter.Format(syntaxNode, workspace);
+        }
 
         _root = syntaxNode.SyntaxTree.GetCompilationUnitRoot();
     }
