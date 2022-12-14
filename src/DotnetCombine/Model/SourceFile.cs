@@ -16,7 +16,7 @@ internal class SourceFile
 
     public IEnumerable<string> Code => _root.Members.Select(m => m.ToFullString());
 
-    public string? Namespace => _root.DescendantNodes().OfType<NamespaceDeclarationSyntax>()?.FirstOrDefault()?.Name.ToString();
+    public string? Namespace => _root.DescendantNodes().OfType<BaseNamespaceDeclarationSyntax>()?.FirstOrDefault()?.Name.ToString();
 
     public SourceFile(string filePath)
     {
