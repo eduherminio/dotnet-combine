@@ -173,6 +173,7 @@ public class Combiner
 
             codeSection.Append(Environment.NewLine);
             codeSection.AppendJoin(Environment.NewLine, parsedFile.Code);
+            codeSection.AppendJoin(Environment.NewLine, parsedFile.EndOfFile);
             codeSection.Append(Environment.NewLine);
         }
 
