@@ -9,6 +9,8 @@ namespace DotnetCombine.Model;
 
 internal class SourceFile
 {
+    private static readonly Workspace _workspace = new AdhocWorkspace();
+
     private CompilationUnitSyntax _root = null!;
 
     public string Filepath { get; }
@@ -41,8 +43,7 @@ internal class SourceFile
 
         if (options.Format)
         {
-            using var workspace = new AdhocWorkspace();
-            syntaxNode = Formatter.Format(syntaxNode, workspace);
+            syntaxNode = Formatter.Format(syntaxNode, _workspace);
         }
 
         _root = syntaxNode.SyntaxTree.GetCompilationUnitRoot();
