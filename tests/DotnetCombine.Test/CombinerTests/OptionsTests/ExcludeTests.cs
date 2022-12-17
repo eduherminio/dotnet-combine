@@ -102,7 +102,7 @@ public class ExcludeTests : BaseCombinerTests
         var expectedOutputFileName = Path.GetFileName(expectedOutputFile);
 
         var pregeneratedOutputFile = Path.Combine(Path.Combine(inputDir, $"{nameof(GeneratedFileExclusions)}.cs"));
-        var pregeneratedOutputFileContent = await File.ReadAllTextAsync(pregeneratedOutputFile);
+        var pregeneratedOutputFileLines = await File.ReadAllLinesAsync(pregeneratedOutputFile);
 
         // Act - having output file deleted
         if (File.Exists(expectedOutputFile))
@@ -124,12 +124,15 @@ public class ExcludeTests : BaseCombinerTests
         Assert.Equal(0, exitCode);
         Assert.True(File.Exists(expectedOutputFile));
 
-        var generatedOutputFileContent = await File.ReadAllTextAsync(expectedOutputFile);
-        Assert.Equal(pregeneratedOutputFileContent.Length, generatedOutputFileContent.Length);
-        Assert.Equal(pregeneratedOutputFileContent.Skip(60), generatedOutputFileContent.Skip(60));  // Skipping first line because of date
+        var generatedOutputFileContent = await File.ReadAllLinesAsync(expectedOutputFile);
+        Assert.Equal(pregeneratedOutputFileLines.Length, generatedOutputFileContent.Length);
+
+        for (int i = 1; i < pregeneratedOutputFileLines.Length; ++i)
+        {
+            Assert.Equal(pregeneratedOutputFileLines[i], generatedOutputFileContent[i]);
+        }
 
         // Arrange
-
         File.Delete(expectedOutputFile);
         File.Copy(pregeneratedOutputFile, expectedOutputFile);
 
@@ -148,9 +151,13 @@ public class ExcludeTests : BaseCombinerTests
         Assert.Equal(0, exitCode);
         Assert.True(File.Exists(expectedOutputFile));
 
-        generatedOutputFileContent = await File.ReadAllTextAsync(expectedOutputFile);
-        Assert.Equal(pregeneratedOutputFileContent.Length, generatedOutputFileContent.Length);
-        Assert.Equal(pregeneratedOutputFileContent.Skip(60), generatedOutputFileContent.Skip(60));  // Skipping first line because of date
+        generatedOutputFileContent = await File.ReadAllLinesAsync(expectedOutputFile);
+        Assert.Equal(pregeneratedOutputFileLines.Length, generatedOutputFileContent.Length);
+
+        for (int i = 1; i < pregeneratedOutputFileLines.Length; ++i)
+        {
+            Assert.Equal(pregeneratedOutputFileLines[i], generatedOutputFileContent[i]);
+        }
 
         // Act - generating file with default name
         options = new CombineOptions()
@@ -182,10 +189,13 @@ public class ExcludeTests : BaseCombinerTests
         Assert.Equal(0, exitCode);
 
         var prefixFile = Directory.GetFiles(DefaultOutputDir, $"{nameof(GeneratedFileExclusions)}-*").Single();
-        generatedOutputFileContent = await File.ReadAllTextAsync(prefixFile);
-        Assert.Equal(pregeneratedOutputFileContent.Length, generatedOutputFileContent.Length);
-        Assert.Equal(pregeneratedOutputFileContent.Skip(60), generatedOutputFileContent.Skip(60));  // Skipping first line because of date
+        generatedOutputFileContent = await File.ReadAllLinesAsync(prefixFile);
+        Assert.Equal(pregeneratedOutputFileLines.Length, generatedOutputFileContent.Length);
 
+        for (int i = 1; i < pregeneratedOutputFileLines.Length; ++i)
+        {
+            Assert.Equal(pregeneratedOutputFileLines[i], generatedOutputFileContent[i]);
+        }
         // Act - generating file with default name + identifyable suffix
         options = new CombineOptions()
         {
@@ -202,10 +212,13 @@ public class ExcludeTests : BaseCombinerTests
         Assert.Equal(0, exitCode);
 
         var suffixFile = Directory.GetFiles(DefaultOutputDir, $"*-{nameof(GeneratedFileExclusions)}{Combiner.OutputExtension}").Single();
-        generatedOutputFileContent = await File.ReadAllTextAsync(suffixFile);
-        Assert.Equal(pregeneratedOutputFileContent.Length, generatedOutputFileContent.Length);
-        Assert.Equal(pregeneratedOutputFileContent.Skip(60), generatedOutputFileContent.Skip(60));  // Skipping first line because of date
+        generatedOutputFileContent = await File.ReadAllLinesAsync(suffixFile);
+        Assert.Equal(pregeneratedOutputFileLines.Length, generatedOutputFileContent.Length);
 
+        for (int i = 1; i < pregeneratedOutputFileLines.Length; ++i)
+        {
+            Assert.Equal(pregeneratedOutputFileLines[i], generatedOutputFileContent[i]);
+        }
         // Act - generating file with default name + identifyable prefix + suffix
         options = new CombineOptions()
         {
@@ -223,8 +236,12 @@ public class ExcludeTests : BaseCombinerTests
         Assert.Equal(0, exitCode);
 
         suffixFile = Directory.GetFiles(DefaultOutputDir, $"{nameof(GeneratedFileExclusions)}-*-{nameof(GeneratedFileExclusions)}{Combiner.OutputExtension}").Single();
-        generatedOutputFileContent = await File.ReadAllTextAsync(suffixFile);
-        Assert.Equal(pregeneratedOutputFileContent.Length, generatedOutputFileContent.Length);
-        Assert.Equal(pregeneratedOutputFileContent.Skip(60), generatedOutputFileContent.Skip(60));  // Skipping first line because of date
+        generatedOutputFileContent = await File.ReadAllLinesAsync(suffixFile);
+        Assert.Equal(pregeneratedOutputFileLines.Length, generatedOutputFileContent.Length);
+
+        for (int i = 1; i < pregeneratedOutputFileLines.Length; ++i)
+        {
+            Assert.Equal(pregeneratedOutputFileLines[i], generatedOutputFileContent[i]);
+        }
     }
 }
