@@ -45,6 +45,7 @@ public class OutputTests : BaseCombinerTests
     public async Task NoOutputFileName_GeneratesUniqueFileName(string outputDir)
     {
         // Arrange
+        string prefix = $"{nameof(NoOutputFileName_GeneratesUniqueFileName)}-{Guid.NewGuid()}-";
         var timeBefore = ParseDateTimeFromFileName(UniqueIdGenerator.UniqueId());
 
         // Act
@@ -53,6 +54,7 @@ public class OutputTests : BaseCombinerTests
             Output = outputDir,
             OverWrite = true,
             Input = InputDir,
+            Prefix = prefix,
             Suffix = CombinerTestsFixture.DefaultSuffix
         };
 
@@ -65,9 +67,11 @@ public class OutputTests : BaseCombinerTests
         var timeAfter = ParseDateTimeFromFileName(UniqueIdGenerator.UniqueId());
         var csGeneratedFiles = existingFiles.Where(f =>
         {
-            if (Path.GetExtension(f) == Combiner.OutputExtension)
+            var fileName = Path.GetFileNameWithoutExtension(f);
+            if (fileName.StartsWith(prefix) && Path.GetExtension(f) == Combiner.OutputExtension)
             {
-                var fileDate = ParseDateTimeFromFileName(Path.GetFileNameWithoutExtension(f).Replace(options.Suffix, string.Empty));
+                var trimmedFileName = fileName[prefix.Length..^options.Suffix.Length];
+                var fileDate = ParseDateTimeFromFileName(trimmedFileName);
                 return fileDate is not null && fileDate >= timeBefore && fileDate <= timeAfter;
             }
 
