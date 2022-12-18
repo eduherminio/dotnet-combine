@@ -1,7 +1,6 @@
 ﻿using DotnetCombine.Options;
 using DotnetCombine.Services;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace DotnetCombine.Test.CombinerTests.OptionsTests;
 
