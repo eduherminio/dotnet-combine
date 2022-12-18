@@ -148,6 +148,7 @@ public class Combiner
                 && filesToExclude?.Any(exclusion => string.Equals(Path.GetFileName(filePath), exclusion, StringComparison.OrdinalIgnoreCase))
                     == false
             && !UniqueIdGenerator.GeneratedFileNameRegex.IsMatch(Path.GetFileName(filePath)))
+            .OrderBy(s => s)
             .ToList();
     }
 
