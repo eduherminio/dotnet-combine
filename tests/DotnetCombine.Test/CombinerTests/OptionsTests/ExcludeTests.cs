@@ -7,12 +7,6 @@ namespace DotnetCombine.Test.CombinerTests.OptionsTests;
 
 public class ExcludeTests : BaseCombinerTests
 {
-    private readonly ITestOutputHelper _output;
-    public ExcludeTests(ITestOutputHelper output)
-    {
-        _output = output;
-    }
-
     [Fact]
     public async Task ExcludeFile()
     {
