@@ -135,13 +135,13 @@ public class OutputTests : BaseCompressorTests
     }
 
     [Theory]
-    [InlineData(DefaultOutputDir + "\\OutputPrefix\\")]
-    [InlineData(DefaultOutputDir + "\\OutputPrefix\\filename")]
-    [InlineData(DefaultOutputDir + "\\OutputPrefix\\filename" + Compressor.OutputExtension)]
+    [InlineData(DefaultOutputDir + "/OutputPrefix/")]
+    [InlineData(DefaultOutputDir + "/OutputPrefix/filename")]
+    [InlineData(DefaultOutputDir + "/OutputPrefix/filename" + Compressor.OutputExtension)]
     public void OutputPrefix(string output)
     {
         // Arrange
-        var prefix = $"prefix-{output.Replace("\\", "-")}-";
+        var prefix = $"prefix-{output.Replace("/", "-")}-";
 
         // Act
         var options = new ZipOptions()
@@ -168,13 +168,13 @@ public class OutputTests : BaseCompressorTests
     }
 
     [Theory]
-    [InlineData(DefaultOutputDir + "\\OutputSuffix\\")]
-    [InlineData(DefaultOutputDir + "\\OutputSuffix\\filename")]
-    [InlineData(DefaultOutputDir + "\\OutputSuffix\\filename" + Compressor.OutputExtension)]
+    [InlineData(DefaultOutputDir + "/OutputSuffix/")]
+    [InlineData(DefaultOutputDir + "/OutputSuffix/filename")]
+    [InlineData(DefaultOutputDir + "/OutputSuffix/filename" + Compressor.OutputExtension)]
     public void OutputSuffix(string output)
     {
         // Arrange
-        var suffix = $"-{output.Replace("\\", "-")}-suffix";
+        var suffix = $"-{output.Replace("/", "-")}-suffix";
 
         // Act
         var options = new ZipOptions()
@@ -202,14 +202,14 @@ public class OutputTests : BaseCompressorTests
     }
 
     [Theory]
-    [InlineData(DefaultOutputDir + "\\OutputPrefixSuffix\\")]
-    [InlineData(DefaultOutputDir + "\\OutputPrefixSuffix\\filename")]
-    [InlineData(DefaultOutputDir + "\\OutputPrefixSuffix\\filename" + Compressor.OutputExtension)]
+    [InlineData(DefaultOutputDir + "/OutputPrefixSuffix/")]
+    [InlineData(DefaultOutputDir + "/OutputPrefixSuffix/filename")]
+    [InlineData(DefaultOutputDir + "/OutputPrefixSuffix/filename" + Compressor.OutputExtension)]
     public void OutputPrefixSuffix(string output)
     {
         // Arrange
-        var prefix = $"preprefix-{output.Replace("\\", "-")}-";
-        var suffix = $"-{output.Replace("\\", "-")}-suffixfix";
+        var prefix = $"preprefix-{output.Replace("/", "-")}-";
+        var suffix = $"-{output.Replace("/", "-")}-suffixfix";
 
         // Act
         var options = new ZipOptions()

@@ -143,13 +143,13 @@ public class OutputTests : BaseCombinerTests
     }
 
     [Theory]
-    [InlineData(DefaultOutputDir + "\\OutputPrefix\\")]
-    [InlineData(DefaultOutputDir + "\\OutputPrefix\\filename")]
-    [InlineData(DefaultOutputDir + "\\OutputPrefix\\filename" + Combiner.OutputExtension)]
+    [InlineData(DefaultOutputDir + "/OutputPrefix/")]
+    [InlineData(DefaultOutputDir + "/OutputPrefix/filename")]
+    [InlineData(DefaultOutputDir + "/OutputPrefix/filename" + Combiner.OutputExtension)]
     public async Task OutputPrefix(string output)
     {
         // Arrange
-        var prefix = $"prefix-{output.Replace("\\", "-")}-";
+        var prefix = $"prefix-{output.Replace("/", "-")}-";
 
         // Act
         var options = new CombineOptions()
@@ -176,13 +176,13 @@ public class OutputTests : BaseCombinerTests
     }
 
     [Theory]
-    [InlineData(DefaultOutputDir + "\\OutputSuffix\\")]
-    [InlineData(DefaultOutputDir + "\\OutputSuffix\\filename")]
-    [InlineData(DefaultOutputDir + "\\OutputSuffix\\filename" + Combiner.OutputExtension)]
+    [InlineData(DefaultOutputDir + "/OutputSuffix/")]
+    [InlineData(DefaultOutputDir + "/OutputSuffix/filename")]
+    [InlineData(DefaultOutputDir + "/OutputSuffix/filename" + Combiner.OutputExtension)]
     public async Task OutputSuffix(string output)
     {
         // Arrange
-        var suffix = $"-{output.Replace("\\", "-")}-suffix";
+        var suffix = $"-{output.Replace("/", "-")}-suffix";
 
         // Act
         var options = new CombineOptions()
@@ -210,14 +210,14 @@ public class OutputTests : BaseCombinerTests
     }
 
     [Theory]
-    [InlineData(DefaultOutputDir + "\\OutputPrefixSuffix\\")]
-    [InlineData(DefaultOutputDir + "\\OutputPrefixSuffix\\filename")]
-    [InlineData(DefaultOutputDir + "\\OutputPrefixSuffix\\filename" + Combiner.OutputExtension)]
+    [InlineData(DefaultOutputDir + "/OutputPrefixSuffix/")]
+    [InlineData(DefaultOutputDir + "/OutputPrefixSuffix/filename")]
+    [InlineData(DefaultOutputDir + "/OutputPrefixSuffix/filename" + Combiner.OutputExtension)]
     public async Task OutputPrefixSuffix(string output)
     {
         // Arrange
-        var prefix = $"preprefix-{output.Replace("\\", "-")}-";
-        var suffix = $"-{output.Replace("\\", "-")}-suffixfix";
+        var prefix = $"preprefix-{output.Replace("/", "-")}-";
+        var suffix = $"-{output.Replace("/", "-")}-suffixfix";
 
         // Act
         var options = new CombineOptions()
