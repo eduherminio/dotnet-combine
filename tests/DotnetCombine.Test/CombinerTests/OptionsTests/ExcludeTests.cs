@@ -112,7 +112,7 @@ public class ExcludeTests : BaseCombinerTests
 
         var options = new CombineOptions()
         {
-            ExcludedItems = new[] { expectedOutputFileName },
+            ExcludedItems = Array.Empty<string>(),
             Output = expectedOutputFile,
             OverWrite = true,
             Input = inputDir,
@@ -139,7 +139,7 @@ public class ExcludeTests : BaseCombinerTests
         // Act - without having output file deleted
         options = new CombineOptions()
         {
-            ExcludedItems = new[] { expectedOutputFileName },
+            ExcludedItems = Array.Empty<string>(),
             Output = expectedOutputFile,
             OverWrite = true,
             Input = inputDir,
