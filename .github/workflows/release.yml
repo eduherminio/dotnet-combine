@@ -39,7 +39,7 @@ jobs:
       PROJECT_ALIAS: dotnet-combine
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Configure git user
       run: |
@@ -49,8 +49,8 @@ jobs:
     - name: Inject slug/short variables
       uses: rlespinasse/github-slug-action@v3.x
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
 
@@ -84,7 +84,7 @@ jobs:
 
     - name: 'Upload test coverage report'
       continue-on-error: true
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: ${{ env.PROJECT_ALIAS }}.${{ github.event.inputs.new_package_version }}-coverage-${{ env.GITHUB_REF_SLUG }}-${{ github.run_number }}
         path: coveragereport/
@@ -95,7 +95,7 @@ jobs:
         dotnet pack -c Release --no-build src/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj --include-symbols -o ${{ env.ARTIFACT_DIR }}
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: ${{ env.PROJECT_ALIAS }}.${{ github.event.inputs.new_package_version }}-${{ env.GITHUB_REF_SLUG }}-${{ github.run_number }}
         path: |
