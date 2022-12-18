@@ -31,11 +31,11 @@ internal class AnnotateNamespacesRewriter : BaseCustomRewriter
             var existingTriviaString = existingTrivia?.ToString();
 
             return SyntaxFactory.Comment(
-                $"// {_message}" +
-                $"{(existingTriviaString?.StartsWith(Environment.NewLine) == true   // i.e. false when there's an #if directive at the beinning of the file
-                    ? ""
-                    : Environment.NewLine)}");
-        }
+            $"// {_message}" +
+            $"{(existingTriviaString?.StartsWith(Environment.NewLine) == true   // i.e. false when there's an #if directive at the beinning of the file
+                ? ""
+                : Environment.NewLine)}");
+    }
 
         if (node.HasLeadingTrivia)
         {
