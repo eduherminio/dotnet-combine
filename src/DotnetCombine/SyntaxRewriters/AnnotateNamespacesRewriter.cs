@@ -26,8 +26,16 @@ internal class AnnotateNamespacesRewriter : BaseCustomRewriter
     private T AddComment<T>(T node)
         where T : BaseNamespaceDeclarationSyntax
     {
-        SyntaxTrivia TriviaToAdd(SyntaxTriviaList? existingTrivia = null) => SyntaxFactory.Comment($"// {_message}" +
-            $"{(existingTrivia?.ToString().EndsWith("\n") == true ? "" : Environment.NewLine)}");
+        SyntaxTrivia TriviaToAdd(SyntaxTriviaList? existingTrivia = null)
+        {
+            var existingTriviaString = existingTrivia?.ToString();
+
+            return SyntaxFactory.Comment(
+            $"// {_message}" +
+            $"{(existingTriviaString?.StartsWith(Environment.NewLine) == true   // i.e. false when there's an #if directive at the beinning of the file
+                ? ""
+                : Environment.NewLine)}");
+    }
 
         if (node.HasLeadingTrivia)
         {
