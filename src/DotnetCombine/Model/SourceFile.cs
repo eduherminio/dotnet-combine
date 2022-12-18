@@ -39,7 +39,7 @@ internal class SourceFile
             ? options.Input.ReplaceEndingDirectorySeparatorWithProperEndingDirectorySeparator()
             : string.Empty;
 
-        var syntaxNode = new AnnotateNamespacesRewriter(Filepath[pathToTrim.Length..]).Visit(originalRoot);
+        var syntaxNode = new AnnotateNamespacesRewriter(Filepath[pathToTrim.Length..].Replace('\\', '/')).Visit(originalRoot);
 
         if (options.Format)
         {
