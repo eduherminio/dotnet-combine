@@ -134,20 +134,10 @@ public class ExcludeTests : BaseCombinerTests
         var generatedOutputFileContent = await File.ReadAllLinesAsync(expectedOutputFile);
         Assert.Equal(pregeneratedOutputFileLines.Length, generatedOutputFileContent.Length);
 
-        bool fail = false;
         for (int i = 1; i < pregeneratedOutputFileLines.Length; ++i)
         {
-            if (pregeneratedOutputFileLines[i] != generatedOutputFileContent[i])
-            {
-                _output.WriteLine($"Line {i}");
-                _output.WriteLine($"Expected: {pregeneratedOutputFileLines[i]}");
-                _output.WriteLine($"Got: {generatedOutputFileContent[i]}");
-                fail = true;
-            }
-            //Assert.Equal(pregeneratedOutputFileLines[i], generatedOutputFileContent[i]);
+            Assert.Equal(pregeneratedOutputFileLines[i], generatedOutputFileContent[i]);
         }
-
-        Assert.False(fail);
 
         // Arrange
         File.Delete(expectedOutputFile);
