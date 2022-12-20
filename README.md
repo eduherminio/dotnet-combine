@@ -256,8 +256,8 @@ Feature requests are welcome.
 
 PRs are also more than welcome, but feel free to open an issue before carrying out any major changes to avoid any misalignments.
 
-[githubactionslogo]: https://github.com/eduherminio/FileParser/workflows/CI%20GitHub%20Actions/badge.svg
-[githubactionslink]: https://github.com/eduherminio/FileParser/actions
+[githubactionslogo]: https://github.com/eduherminio/dotnet-combine/actions/workflows/ci.yml/badge.svg
+[githubactionslink]: https://github.com/eduherminio/dotnet-combine/actions/workflows/ci.yml
 [nugetlogo]: https://img.shields.io/nuget/v/dotnet-combine.svg?style=flat-square&label=nuget
 [nugetlink]: https://www.nuget.org/packages/dotnet-combine
 [coveragelogo]: https://sonarcloud.io/api/project_badges/measure?project=eduherminio_dotnet-combine&metric=coverage
