@@ -1,4 +1,4 @@
-﻿name: Release
+name: Release
 
 on:
   workflow_dispatch:
@@ -39,7 +39,7 @@ jobs:
       PROJECT_ALIAS: dotnet-combine
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Configure git user
       run: |
