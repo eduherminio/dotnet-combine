@@ -98,7 +98,7 @@ jobs:
 
     - name: '[Ubuntu] Upload Artifact'
       if: matrix.os == 'ubuntu-latest'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ env.PROJECT_ALIAS }}-ci-${{ github.run_number }}
         path: |
@@ -123,7 +123,7 @@ jobs:
 
     - name: '[Windows] Upload test coverage report'
       if: matrix.os == 'windows-latest'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ env.PROJECT_ALIAS }}-coverage-ci-${{ github.run_number }}
         path: coveragereport/
