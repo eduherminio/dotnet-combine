@@ -45,7 +45,7 @@ jobs:
         distribution: 'zulu'
 
     - name: '[Windows] Cache SonarCloud packages'
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       if: matrix.os == 'windows-latest'
       with:
         path: ~\sonar\cache
@@ -55,7 +55,7 @@ jobs:
     - name: '[Windows] Cache SonarCloud scanner'
       id: cache-sonar-scanner
       if: matrix.os == 'windows-latest'
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: .\.sonar\scanner
         key: ${{ runner.os }}-sonar-scanner
